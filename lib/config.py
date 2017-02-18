@@ -38,13 +38,13 @@ def generate_config_file():
     config.set('Steam','API_KEY','')
     config.set('Steam',"# Place your Steam ID here.")
     config.set('Steam','STEAM_ID','')
-    config.set('Steam',"# Its unlikely this will need to change, but just in case.)
+    config.set('Steam',"# Its unlikely this will need to change, but just in case.")
     config.set('Steam','API_URL','https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?')
     config.set('Steam',"# Games to be excluded from the draw.")
     config.set('Steam','EXCLUDE','')
     config.set('Steam',"# Games to be included that may have a platime of more than 0")
     config.set('Steam','INCLUDE','')
-    config.set('Steam',"# Steam does not take determiners into account when sorting games, place here those you want to ignore when sorting games by title.)
+    config.set('Steam',"# Steam does not take determiners into account when sorting games, place here those you want to ignore when sorting games by title.")
     config.set('Steam','DETERMINERS','a,an,the')
     
     if not os.path.exists(os.path.dirname(CONFIG_FILE)):

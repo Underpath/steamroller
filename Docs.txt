@@ -3,3 +3,6 @@ http://api.steampowered.com/ISteamApps/GetAppList/v0001/
 
 Get app details
 http://store.steampowered.com/api/appdetails?appids=261640
+
+Get steam ID
+http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=A5084D0F8C5F565E5D6974E9E5BE0D2F&vanityurl=Sarmacid

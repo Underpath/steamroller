@@ -2,7 +2,7 @@
 
 import os
 import sys
-sys.path.append(os.path.abspath('bin'))
+sys.path.append(os.path.abspath('lib'))
 
 import config
 import requests
@@ -10,24 +10,28 @@ from urllib import urlencode
 import json
 from operator import itemgetter
 from random import SystemRandom
+import argparse
+
 
 def main():
+    
     games = get_games()
+    game_count = len(games)
+    print 'Number of new games: ' + str(game_count)
+    index_to_play = SystemRandom().randrange(game_count)
+    print 'Game chosen is "' + games[index_to_play]['name'] + '"'
     
 def get_games():
+    # Returns sorted list of new games.
     params = {'key': config.get_steam_api_key(), 'steamid': config.get_steam_id(), 'include_appinfo': 1, 'format': 'json'}
     url = config.get_steam_api_url() + urlencode(params)
     r = requests.get(url)
     games = r.json()['response']['games']
     new_games = get_new_games(games)
-    new_games = steam_sort(new_games)
-    game_count = len(new_games)
-    print 'Number of new games: ' + str(game_count)
-    index_to_play = SystemRandom().randrange(game_count)
-    print 'Game chosen is "' + new_games[index_to_play]['name'] + '"'
+    return steam_sort(new_games)
 
 def get_new_games(games):
-    # Gets the new games, those with 0 playtime.
+    # Returns a list of new games, those with 0 playtime.
     new_games = []
     exclusions = config.get_excluded_appids()
     inclusions = config.get_included_appids()
