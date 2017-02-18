@@ -25,8 +25,6 @@ def get_games():
     print 'Number of new games: ' + str(game_count)
     index_to_play = SystemRandom().randrange(game_count)
     print 'Game chosen is "' + new_games[index_to_play]['name'] + '"'
-    #for game in new_games:
-    #    print game['name'] + ' - ' + str(game['appid'])
 
 def get_new_games(games):
     # Gets the new games, those with 0 playtime.
@@ -42,7 +40,7 @@ def get_new_games(games):
     return new_games
 
 def steam_sort(games):
-    #Sorts game so they appear in the same order as in Steam.
+    # Sorts games so they appear in the same order as in Steam.
     determiners = config.get_steam_determiners()
     for game in games:
         sortname = game['name'].lower()
