@@ -11,10 +11,12 @@ import json
 from operator import itemgetter
 from random import SystemRandom
 import argparse
-
+import config_file
 
 def main():
-    
+    usage()
+    if not config_file.check_config_file(config.CONFIG_FILE):
+        sys.exit()
     games = get_games()
     game_count = len(games)
     print 'Number of new games: ' + str(game_count)
@@ -54,7 +56,19 @@ def steam_sort(games):
         sortname = sortname
         game['sortname'] = sortname
     return sorted(games, key=itemgetter('sortname'))
+
+
+def usage():
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument('-h', '--help', help="Show this help message and exit.", action='help')
+    parser.add_argument('-g', '--config', help="Generate basic config file.", action='store_true')
+    parser.add_argument('-w', '--config-wizard', help="Start wizard to build the config file.", action='store_true')
+    args = parser.parse_args()
+    if args.config:
+        print 'generate config file'
+        sys.exit()
     
+
 
 if __name__ == "__main__":
     main()
