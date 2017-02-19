@@ -3,18 +3,32 @@ import config as steamroller_config
 import os
 import sys
 
+DEFAULT_OPTIONS = steamroller_config.get_config_file_options()
+
 def no_config_file(config_file_path):
     print 'Configuration file not found, generating sample configuration file at "config/config.cfg", please fill out the options and try running the program again.'
     generate_config_file(config_file_path)
     sys.exit()
 
-def generate_config_file(config_file_path):
+def generate_basic_config(config_file_path):
+    if os.path.isfile(config_file_path):
+        while True:
+            print 'Configuration file already exists, overwrite? [y/N]'
+            answer = raw_input().lower()
+            if answer == 'n' or answer == 'no' or not answer:
+                break
+            elif answer == 'y' or answer == 'yes':
+                generate_config_file(config_file_path)
+                break
+    else:
+        generate_config_file(config_file_path)
+
+def generate_config_file(config_file_path, options=DEFAULT_OPTIONS):
     # Default config values, mostly empty.
     config = ConfigParser.RawConfigParser(allow_no_value=True)
     config.optionxform = str
     section = steamroller_config.get_section_name()
     config.add_section(section)
-    options = steamroller_config.get_config_file_options()
     for option in options:
         comment = '\n# ' + option['comment']
         config.set(section,comment)
@@ -25,7 +39,7 @@ def generate_config_file(config_file_path):
     with open(config_file_path, 'w') as configuration_file:
         config.write(configuration_file)
 
-def check_config_file(config_file_path):
+def check_config_file(config_file_path, options=DEFAULT_OPTIONS):
     # Checks that the config file exists and has the minimum requirements.
     if not os.path.isfile(config_file_path):
         no_config_file(config_file_path)
@@ -35,7 +49,6 @@ def check_config_file(config_file_path):
     missing_section = False
     section = steamroller_config.get_section_name()
     required_options = []
-    options = steamroller_config.get_config_file_options()
     for option in options:
         if option['mandatory']:
             required_options.append(option['name'])
@@ -62,3 +75,7 @@ def check_config_file(config_file_path):
         print ''
         return False
     return True
+
+def config_wizard(config_file_path):
+    pass
+    

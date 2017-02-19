@@ -1,7 +1,5 @@
 import ConfigParser
 import os
-import config_file
-from sys import exit
 
 CONFIG_FILE = 'config/config.cfg'
 
@@ -46,13 +44,13 @@ def get_config_file_options():
     option['name'] = 'API_KEY'
     option['mandatory'] = True
     option['comment'] = "Place your Steam API key here."
-    option['default_value'] = 'https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?'
+    option['default_value'] = ''
     options.append(option)
     option = {}
     option['name'] = 'API_URL'
     option['mandatory'] = True
     option['comment'] = "It's unlikely this will need to change, but just in case."
-    option['default_value'] = ''
+    option['default_value'] = 'https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?'
     options.append(option)
     option = {}
     option['name'] = 'EXCLUDE'

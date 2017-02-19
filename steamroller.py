@@ -13,16 +13,18 @@ from random import SystemRandom
 import argparse
 import config_file
 
+config_file_path = config.CONFIG_FILE
+
 def main():
     usage()
-    if not config_file.check_config_file(config.CONFIG_FILE):
+    if not config_file.check_config_file(config_file_path):
         sys.exit()
     games = get_games()
     game_count = len(games)
     print 'Number of new games: ' + str(game_count)
     index_to_play = SystemRandom().randrange(game_count)
     print 'Game chosen is "' + games[index_to_play]['name'] + '"'
-    
+
 def get_games():
     # Returns sorted list of new games.
     params = {'key': config.get_steam_api_key(), 'steamid': config.get_steam_id(), 'include_appinfo': 1, 'format': 'json'}
@@ -62,12 +64,15 @@ def usage():
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument('-h', '--help', help="Show this help message and exit.", action='help')
     parser.add_argument('-g', '--config', help="Generate basic config file.", action='store_true')
-    parser.add_argument('-w', '--config-wizard', help="Start wizard to build the config file.", action='store_true')
+    parser.add_argument('-s', '--steam-id', help="Returns the steam ID for a given user", action='store_true')
     args = parser.parse_args()
     if args.config:
-        print 'generate config file'
+        print "Generating config file..."
+        config_file.generate_basic_config(config_file_path)
         sys.exit()
-    
+    elif args.config_wizard:
+        config_file.config_wizard(config_file_path)
+        #######################################
 
 
 if __name__ == "__main__":
