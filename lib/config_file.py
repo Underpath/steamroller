@@ -39,7 +39,8 @@ def generate_config_file(config_file_path, options=DEFAULT_OPTIONS):
     with open(config_file_path, 'w') as configuration_file:
         config.write(configuration_file)
 
-def check_config_file(config_file_path, options=DEFAULT_OPTIONS):
+def check_config_file(config_file_path=steamroller_config.CONFIG_FILE, options=DEFAULT_OPTIONS):
+    check = True
     # Checks that the config file exists and has the minimum requirements.
     if not os.path.isfile(config_file_path):
         no_config_file(config_file_path)
@@ -67,14 +68,15 @@ def check_config_file(config_file_path, options=DEFAULT_OPTIONS):
             missing_options.append(option)
     if missing_section:
         print 'Error: Section "' + section + '" not found in config file.'
-        return False
+        check = False
     if missing_options:
         print '\nFollowing mandatory options missing from config file:\n'
         for option in missing_options:
             print '\t' + option
         print ''
-        return False
-    return True
+        check = False
+    if not check:
+        sys.exit()
 
 def config_wizard(config_file_path):
     pass

@@ -12,13 +12,13 @@ from operator import itemgetter
 from random import SystemRandom
 import argparse
 import config_file
+import steam
 
 config_file_path = config.CONFIG_FILE
 
 def main():
     usage()
-    if not config_file.check_config_file(config_file_path):
-        sys.exit()
+    config_file.check_config_file(config_file_path)
     games = get_games()
     game_count = len(games)
     print 'Number of new games: ' + str(game_count)
@@ -28,7 +28,7 @@ def main():
 def get_games():
     # Returns sorted list of new games.
     params = {'key': config.get_steam_api_key(), 'steamid': config.get_steam_id(), 'include_appinfo': 1, 'format': 'json'}
-    url = config.get_steam_api_url() + urlencode(params)
+    url = config.get_owned_games_api_endpoint() + urlencode(params)
     r = requests.get(url)
     games = r.json()['response']['games']
     new_games = get_new_games(games)
@@ -64,14 +64,19 @@ def usage():
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument('-h', '--help', help="Show this help message and exit.", action='help')
     parser.add_argument('-g', '--config', help="Generate basic config file.", action='store_true')
-    parser.add_argument('-s', '--steam-id', help="Returns the steam ID for a given user", action='store_true')
+    parser.add_argument('-s', '--steam-id', metavar='http://steamcommunity.com/id/<username>', help="Returns the steam ID for the user of a given steamcommunity URL.", type=str)
+    #parser.add_argument('-s', '--steam-id', help="Returns the steam ID for the user of a given steamcommunity URL.", action='store_true', metavar='http://steamcommunity.com/id/<username>')
     args = parser.parse_args()
+    
     if args.config:
         print "Generating config file..."
         config_file.generate_basic_config(config_file_path)
         sys.exit()
-    elif args.config_wizard:
-        config_file.config_wizard(config_file_path)
+    elif args.steam_id:
+        steam_id = steam.get_steamid(args.steam_id)
+        if steam_id:
+            print 'Steam ID: ' + steam_id
+        sys.exit()
         #######################################
 
 
