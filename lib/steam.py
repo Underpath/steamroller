@@ -9,7 +9,7 @@ def get_steamid(url):
     config_file.check_config_file(config.CONFIG_FILE,[config.get_default_option('API_KEY')])
     config_file.check_config_file(config.CONFIG_FILE,[config.get_default_option('VANITY_URL_TO_STEAMID_API')])
     parsed_url = urlparse(url)
-    parsed_steam_url = urlparse(config.get_steamcommunity_base_url())
+    parsed_steam_url = urlparse(config.get_option('STEAMCOMMUNITY_BASE_URL'))
     url_path = parsed_url.path.split('/')
     steam_url_path = parsed_steam_url.path.replace('/', '')
     is_steam_url = True

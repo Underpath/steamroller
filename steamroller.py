@@ -27,8 +27,8 @@ def main():
 
 def get_games():
     # Returns sorted list of new games.
-    params = {'key': config.get_steam_api_key(), 'steamid': config.get_steam_id(), 'include_appinfo': 1, 'format': 'json'}
-    url = config.get_owned_games_api_endpoint() + urlencode(params)
+    params = {'key': config.get_option('API_KEY'), 'steamid': config.get_option('STEAM_ID'), 'include_appinfo': 1, 'format': 'json'}
+    url = config.get_option('OWNED_GAMES_API') + urlencode(params)
     r = requests.get(url)
     games = r.json()['response']['games']
     new_games = get_new_games(games)
@@ -65,11 +65,12 @@ def usage():
     parser.add_argument('-h', '--help', help="Show this help message and exit.", action='help')
     parser.add_argument('-g', '--config', help="Generate basic config file.", action='store_true')
     parser.add_argument('-s', '--steam-id', metavar='http://steamcommunity.com/id/<username>', help="Returns the steam ID for the user of a given steamcommunity URL.", type=str)
-    #parser.add_argument('-s', '--steam-id', help="Returns the steam ID for the user of a given steamcommunity URL.", action='store_true', metavar='http://steamcommunity.com/id/<username>')
     args = parser.parse_args()
     
     if args.config:
         print "Generating config file..."
+        #print config.get_steam_id()
+        #print config.get_steam_determiners()
         config_file.generate_basic_config(config_file_path)
         sys.exit()
     elif args.steam_id:
@@ -77,7 +78,6 @@ def usage():
         if steam_id:
             print 'Steam ID: ' + steam_id
         sys.exit()
-        #######################################
 
 
 if __name__ == "__main__":

@@ -6,18 +6,6 @@ CONFIG_FILE = 'config/config.cfg'
 def get_option(option,option_type='str'):
     if option_type == 'str':
         return config.get(get_section_name(), option)
-    
-
-def get_steam_id():
-    return config.get(get_section_name(), 'STEAM_ID')
-
-    
-def get_steam_api_key():
-    return config.get(get_section_name(), 'API_KEY')
-
-    
-def get_owned_games_api_endpoint():
-    return config.get(get_section_name(), 'OWNED_GAMES_API')
 
     
 def get_excluded_appids():
@@ -81,6 +69,12 @@ def get_config_file_options():
     option['comment'] = "Steam does not take determiners into account when sorting games by title, place here the determiners you want ignored when sorting games by title."
     option['default_value'] = 'a,an,the'
     options.append(option)
+    option = {}
+    option['name'] = 'STEAMCOMMUNITY_BASE_URL'
+    option['mandatory'] = True
+    option['comment'] = "Base URL for Steamcommunity's vanity URLs"
+    option['default_value'] = 'https://steamcommunity.com/id'
+    options.append(option)
     return options
 
 def get_default_option(name):
@@ -88,11 +82,6 @@ def get_default_option(name):
         if option['name'] == name:
             return option
     return False
-
-def get_steamcommunity_base_url():
-    return 'https://steamcommunity.com/id'
-    
-    
 
 config = ConfigParser.ConfigParser()
 config.read(CONFIG_FILE)
