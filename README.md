@@ -9,6 +9,10 @@ Get rid of the burden of having to pick which game in your Steam library you wan
 * Steam API key, to get one go to https://steamcommunity.com/dev/apikey
 * Steam ID, this is your Steam ID; you can get it using steamroller but you'll need your Steam vanity URL.
 
+## Dependencies
+
+* requests
+
 ## Usage
 
 ```

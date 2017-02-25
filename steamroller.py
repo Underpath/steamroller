@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 
-import os
-import sys
-sys.path.append(os.path.abspath('lib'))
-
+from lib import config
+from lib import config_file
+from lib import steam
 from random import SystemRandom
 import argparse
-import config
-import config_file
-import steam
+import os
+import sys
 
 config_file_path = config.CONFIG_FILE
+
 
 def main(param):
     config_file.check_config_file(config_file_path)
@@ -26,8 +25,10 @@ def main(param):
     index_to_play = SystemRandom().randrange(game_count)
     print 'Game chosen is "' + filtered_games[index_to_play]['name'] + '"'
 
+
 def print_list(filtered='new'):
-    """Prints games to screen, depending on the 'filtered' parameter prints all or only new ones."""
+    """Prints games to screen, depending on the 'filtered' parameter prints all
+    or only new ones."""
     games = steam.get_games()
     if filtered == 'new':
         filtered_games = steam.get_new_games(games)
@@ -37,16 +38,27 @@ def print_list(filtered='new'):
     for game in sorted_games:
         print str(game['appid']) + ' - ' + game['name']
 
+
 def usage():
     parser = argparse.ArgumentParser(add_help=False)
-    parser.add_argument('-a', '--all', help="Choose from all games", action='store_true')
-    parser.add_argument('-g', '--config', help="Generate basic config file.", action='store_true')
-    parser.add_argument('-h', '--help', help="Show this help message and exit.", action='help')
-    parser.add_argument('-i', '--list-all', help="List all games with their appid.", action='store_true')
-    parser.add_argument('-l', '--list', help="List new games with their appid.", action='store_true')
-    parser.add_argument('-s', '--steam-id', metavar='http://steamcommunity.com/id/<username>', help="Returns the steam ID for the user of a given steamcommunity URL.", type=str)
+    parser.add_argument('-a', '--all', help="Choose from all games",
+                        action='store_true')
+    parser.add_argument('-g', '--config', help="Generate basic config file.",
+                        action='store_true')
+    parser.add_argument('-h', '--help',
+                        help="Show this help message and exit.", action='help')
+    parser.add_argument('-i', '--list-all',
+                        help="List all games with their appid.",
+                        action='store_true')
+    parser.add_argument('-l', '--list',
+                        help="List new games with their appid.",
+                        action='store_true')
+    parser.add_argument('-s', '--steam-id',
+                        metavar='http://steamcommunity.com/id/<username>',
+                        help="Returns the steam ID for the user of a given " +
+                        "steamcommunity URL.", type=str)
     args = parser.parse_args()
-    
+
     if args.config:
         print "Generating config file..."
         config_file.generate_basic_config(config_file_path)
