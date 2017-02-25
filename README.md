@@ -19,7 +19,7 @@ Get rid of the burden of having to pick which game in your Steam library you wan
 usage: steamroller.py [-a] [-g] [-h] [-i] [-l] [-s http://steamcommunity.com/id/<username>]
 
 optional arguments:
-  -a, --all             Choose from all games
+  -a, --all             Choose from all games.
   -g, --config          Generate basic config file.
   -h, --help            Show this help message and exit.
   -i, --list-all        List all games with their appid.

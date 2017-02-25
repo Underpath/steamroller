@@ -41,7 +41,7 @@ def print_list(filtered='new'):
 
 def usage():
     parser = argparse.ArgumentParser(add_help=False)
-    parser.add_argument('-a', '--all', help="Choose from all games",
+    parser.add_argument('-a', '--all', help="Choose from all games.",
                         action='store_true')
     parser.add_argument('-g', '--config', help="Generate basic config file.",
                         action='store_true')
