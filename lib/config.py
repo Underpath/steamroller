@@ -1,31 +1,22 @@
 import ConfigParser
-import os
 
 CONFIG_FILE = 'config/config.cfg'
 
 def get_option(option,option_type='str'):
+    """Grabs selected option from the config file and returns it in the format requested"""
+    option_value = config.get(get_section_name(), option)
     if option_type == 'str':
-        return config.get(get_section_name(), option)
-
-    
-def get_excluded_appids():
-    exclusions = config.get(get_section_name(), 'EXCLUDE')
-    return map(int, exclusions.split(','))
-
-    
-def get_included_appids():
-    inclusions = config.get(get_section_name(), 'INCLUDE')
-    return map(int, inclusions.split(','))
-
-    
-def get_steam_determiners():
-    determiners = config.get(get_section_name(), 'DETERMINERS')
-    return determiners.split(',')
+        return option_value
+    elif option_type == 'str_list':
+        return option_value.split(',')
+    elif option_type == 'int_list':
+        return map(int, option_value.split(','))
     
 def get_section_name():
     return 'Steam'
 
 def get_config_file_options():
+    """Default config file options"""
     options = []
     option = {}
     option['name'] = 'STEAM_ID'
@@ -78,6 +69,7 @@ def get_config_file_options():
     return options
 
 def get_default_option(name):
+    """Returns one of the options from the default options"""
     for option in get_config_file_options():
         if option['name'] == name:
             return option
