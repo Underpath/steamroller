@@ -1,0 +1,14 @@
+<html>
+    <head>
+        <title>{{ title }} - Steamroller</title>
+        <link href="{{ url_for('static', filename='layout.css') }}" rel="stylesheet" type="text/css" media="all">
+    </head>
+    <body>
+        <h1>Hello, {{ user.steam_id }}!</h1>
+        <div id="middle"><p>
+            The following game was picked out of a total of {{ count }} games:
+            </br>
+            {{ game.appid }} - {{ game.name }}
+        </p></div>
+    </body>
+</html>

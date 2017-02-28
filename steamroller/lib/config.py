@@ -1,6 +1,7 @@
 import ConfigParser
+import os
 
-CONFIG_FILE = 'config/config.cfg'
+CONFIG_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), '../config/config.cfg'))
 
 
 def get_option(option, option_type='str'):

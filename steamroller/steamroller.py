@@ -3,7 +3,6 @@
 from lib import config
 from lib import config_file
 from lib import steam
-from random import SystemRandom
 import argparse
 import os
 import sys
@@ -12,30 +11,28 @@ config_file_path = config.CONFIG_FILE
 
 
 def main(param):
-    config_file.check_config_file(config_file_path)
-    games = steam.get_games()
+    config_file.check(config_file_path)
+    s = steam.steam()
     if param == 'all':
-        filtered_games = games
+        game_count, game = s.pick_all()
         output = "Total number of games: "
     else:
-        filtered_games = steam.get_new_games(games)
+        game_count, game = s.pick_new()
         output = "New games to choose from: "
-    game_count = len(filtered_games)
     print output + str(game_count)
-    index_to_play = SystemRandom().randrange(game_count)
-    print 'Game chosen is "' + filtered_games[index_to_play]['name'] + '"'
+    print 'Game chosen is "' + game['name'] + '"'
 
 
 def print_list(filtered='new'):
     """Prints games to screen, depending on the 'filtered' parameter prints all
     or only new ones."""
-    games = steam.get_games()
+
+    s = steam.steam()
     if filtered == 'new':
-        filtered_games = steam.get_new_games(games)
+        games = s.new_games()
     elif filtered == 'all':
-        filtered_games = games
-    sorted_games = steam.steam_sort(filtered_games)
-    for game in sorted_games:
+        games = s.games()
+    for game in games:
         print str(game['appid']) + ' - ' + game['name']
 
 

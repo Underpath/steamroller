@@ -1,0 +1,12 @@
+<html>
+    <head>
+        <title>{{ title }} - Steamroller</title>
+        <link href="{{ url_for('static', filename='layout.css') }}" rel="stylesheet" type="text/css" media="all">
+    </head>
+    <body>
+        <h1>Hello, {{ user.steam_id }}!</h1>
+        {% for game in games %}
+        <div id="middle"><p>{{ game.appid }} - {{ game.name }}</p></div>
+        {% endfor %}
+    </body>
+</html>

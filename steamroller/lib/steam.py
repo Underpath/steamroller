@@ -5,14 +5,15 @@ from urllib import urlencode
 import requests
 from operator import itemgetter
 from sys import exit
+from random import SystemRandom
 
 
 def get_steamid(url):
     """Takes a Steamcommunity vanity URL and returns the Steam ID for that
     user. Uses a steam API for this."""
-    config_file.check_config_file(config.CONFIG_FILE,
+    config_file.check(config.CONFIG_FILE,
                                   [config.get_default_option('API_KEY')])
-    config_file.check_config_file(config.CONFIG_FILE,
+    config_file.check(config.CONFIG_FILE,
                                   [config.get_default_option('VANITY_URL_TO_' +
                                                              'STEAMID_API')])
     parsed_url = urlparse(url)
@@ -62,33 +63,10 @@ def make_request_to_api(base_url, params=None):
         return r.json()['response']
 
 
-def get_games():
-    """Returns list of owned games for a SteamID."""
-    params = {'key': config.get_option('API_KEY'),
-              'steamid': config.get_option('STEAM_ID'), 'include_appinfo': 1,
-              'format': 'json'}
-    games = make_request_to_api(config.get_option('OWNED_GAMES_API'),
-                                params)['games']
-    return games
-
-
-def get_new_games(games):
-    """Takes a list of games and returns a list of games that are new, those
-    with 0 playtime taking the 'INCLUDE' and 'EXCLUDE' options into account."""
-    new_games = []
-    exclusions = config.get_option('EXCLUDE', 'int_list')
-    inclusions = config.get_option('INCLUDE', 'int_list')
-    for game in games:
-        if game['appid'] in inclusions:
-            new_games.append(game)
-        elif game['playtime_forever'] == 0 and game['appid'] not in exclusions:
-            new_games.append(game)
-    return new_games
-
-
 def steam_sort(games):
     """Takes a list of games and returns that list sorted in the same order as
     in Steam."""
+
     determiners = config.get_option('DETERMINERS', 'str_list')
     for game in games:
         sortname = game['name'].lower()
@@ -98,3 +76,39 @@ def steam_sort(games):
         sortname = sortname
         game['sortname'] = sortname
     return sorted(games, key=itemgetter('sortname'))
+
+class steam():
+    def __init__(self):
+        self.steam_id = config.get_option('STEAM_ID')
+    def games(self):
+        params = {'key': config.get_option('API_KEY'),
+          'steamid': config.get_option('STEAM_ID'), 'include_appinfo': 1,
+          'format': 'json'}
+        games = make_request_to_api(config.get_option('OWNED_GAMES_API'),
+                            params)['games']
+        return steam_sort(games)
+    def new_games(self):
+        new_games = []
+        exclusions = config.get_option('EXCLUDE', 'int_list')
+        inclusions = config.get_option('INCLUDE', 'int_list')
+        games = self.games()
+        for game in games:
+            if game['appid'] in inclusions:
+                new_games.append(game)
+            elif game['playtime_forever'] == 0 and game['appid'] not in exclusions:
+                new_games.append(game)
+        return steam_sort(new_games)
+    def pick_new(self):
+        games = self.new_games()
+        return pick_game(games)
+    def pick_all(self):
+        games = self.games()
+        return pick_game(games)
+
+
+def pick_game(games):
+    count = len(games)
+    pick = SystemRandom().randrange(count)
+    return count, games[pick]
+    
+    
