@@ -6,7 +6,7 @@
     <body>
         <h1>Hello, {{ user.steam_id }}!</h1>
         {% for game in games %}
-        <div id="middle"><p>{{ game.appid }} - {{ game.name }}</p></div>
+        <div id="middle"><p>{{ game.name }} - {{ game.appid }}</p></div>
         {% endfor %}
     </body>
 </html>

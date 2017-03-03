@@ -11,6 +11,7 @@ from random import SystemRandom
 def get_steamid(url):
     """Takes a Steamcommunity vanity URL and returns the Steam ID for that
     user. Uses a steam API for this."""
+
     config_file.check(config.CONFIG_FILE,
                                   [config.get_default_option('API_KEY')])
     config_file.check(config.CONFIG_FILE,
@@ -36,7 +37,7 @@ def get_steamid(url):
         params = {'key': config.get_option('API_KEY'),
                   'vanityurl': url_path[2], 'format': 'json'}
         api_url = config.get_option('VANITY_URL_TO_STEAMID_API')
-        response = make_request_to_api(api_url, params)
+        response = make_request_to_api(api_url, params)['response']
         if response['success'] == 1:
             return response['steamid']
         else:
@@ -49,6 +50,7 @@ def get_steamid(url):
 def make_request_to_api(base_url, params=None):
     """Generic function to make HTTP requests, read the response as JSON and
     return the response as dictionary."""
+
     if params:
         url = base_url + urlencode(params)
     else:
@@ -60,7 +62,7 @@ def make_request_to_api(base_url, params=None):
         print 'There was an error trying to reach the website.'
         exit()
     if r.status_code == 200:
-        return r.json()['response']
+        return r.json()
 
 
 def steam_sort(games):
@@ -81,13 +83,18 @@ class steam():
     def __init__(self):
         self.steam_id = config.get_option('STEAM_ID')
     def games(self):
+        """Returns list of games owned by a Steam ID."""
+
         params = {'key': config.get_option('API_KEY'),
           'steamid': config.get_option('STEAM_ID'), 'include_appinfo': 1,
           'format': 'json'}
         games = make_request_to_api(config.get_option('OWNED_GAMES_API'),
-                            params)['games']
+                            params)['response']['games']
         return steam_sort(games)
     def new_games(self):
+        """Returns list of new games owned by a Steam ID. New games are those
+        with 0 playtime and those included/excluded in options."""
+
         new_games = []
         exclusions = config.get_option('EXCLUDE', 'int_list')
         inclusions = config.get_option('INCLUDE', 'int_list')
@@ -99,16 +106,31 @@ class steam():
                 new_games.append(game)
         return steam_sort(new_games)
     def pick_new(self):
+        """Returns game and details from the list of new games."""
+
         games = self.new_games()
         return pick_game(games)
     def pick_all(self):
+        """Returns game and details from the list of all games."""
+
         games = self.games()
         return pick_game(games)
 
+
+def is_early_access(appid):
+    """Queries the steam API for the game genres and returns true if 'Early
+    Access' is among them"""
+    
+    api_url = config.get_option('STEAMAPP_DETAILS')
+    params = { 'appids': appid }
+    app_data = make_request_to_api(api_url, params)
+    genres = app_data[str(appid)]['data']['genres']
+    for genre in genres:
+        if int(genre['id']) == 70:
+            return True
+    return False
 
 def pick_game(games):
     count = len(games)
     pick = SystemRandom().randrange(count)
     return count, games[pick]
-    
-    

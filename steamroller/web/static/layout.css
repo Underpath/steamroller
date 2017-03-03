@@ -28,12 +28,29 @@ strong, b {
 	font-weight: bold;
 	}
 p {
-	font-size: 12px;
+	font-size: 14px;
 	line-height: 22px;
 	margin-top: 20px;
 	margin-bottom: 10px; 
 	}
-
+.button {
+    background-color: #333;
+    border: none;
+    color: #ccc;
+    padding: 8px 22px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+}
+.button:hover {
+    box-shadow: 0 8px 12px 0 #888888;
+}
+.button:active {
+	background-color: #999;
+	box-shadow: 0 5px #333;
+	transform: translateY(4px);
+}
 /* weird ie5win bug: all line-height to font-size ratios must agree or box gets pushed around. UPDATE: this has turned out to be very rare. my current recommendation is IGNORE this warning. at the moment i'm leaving it in only in case the issue turns up again. possibly the original bug in march 2001 was caused by an unusual combination of factors, although this solved it at the time.*/
 
 h1 {

@@ -8,7 +8,18 @@
         <div id="middle"><p>
             The following game was picked out of a total of {{ count }} games:
             </br>
+            <img src="http://media.steampowered.com/steamcommunity/public/images/apps/{{game.appid}}/{{game.img_logo_url}}.jpg">
+            </br>
             {{ game.appid }} - {{ game.name }}
+            </br>
+            <input type="button" class="button" value="Reroll!" onClick="window.location.reload()">
+            </br>
+            {% if early_access %}
+            WARNING!!! Game is in early acess!!!
+            {% endif %}
+            {% if debug %}
+            {{ game }}
+            {% endif %}
         </p></div>
     </body>
 </html>
