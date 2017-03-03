@@ -2,7 +2,7 @@
 
 from lib import config
 from lib import config_file
-from lib import steam
+from lib import games
 import argparse
 import os
 import sys
@@ -12,7 +12,7 @@ config_file_path = config.CONFIG_FILE
 
 def main(param):
     config_file.check(config_file_path)
-    s = steam.steam()
+    s = games.steam()
     if param == 'all':
         game_count, game = s.pick_all()
         output = "Total number of games: "
@@ -27,7 +27,7 @@ def print_list(filtered='new'):
     """Prints games to screen, depending on the 'filtered' parameter prints all
     or only new ones."""
 
-    s = steam.steam()
+    s = games.steam()
     if filtered == 'new':
         games = s.new_games()
     elif filtered == 'all':
@@ -61,7 +61,7 @@ def usage():
         config_file.generate_basic_config(config_file_path)
         sys.exit()
     elif args.steam_id:
-        steam_id = steam.get_steamid(args.steam_id)
+        steam_id = games.get_steamid(args.steam_id)
         if steam_id:
             print 'Steam ID: ' + steam_id
         sys.exit()

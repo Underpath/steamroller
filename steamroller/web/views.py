@@ -1,7 +1,7 @@
 from steamroller.web import app
 from steamroller.lib import config
 from flask import render_template, request
-from steamroller.lib import steam
+from steamroller.lib import games
 
 @app.route('/')
 @app.route('/index')
@@ -17,13 +17,13 @@ def web_config():
 
 @app.route('/all')
 def all_games():
-    s = steam.steam()
+    s = games.steam()
     user = {'steam_id': config.get_option('STEAM_ID')}
     return render_template('index.html', title='Home', user=user, games=s.games())
 
 @app.route('/new')
 def new_games():
-    s = steam.steam()
+    s = games.steam()
     user = {'steam_id': s.steam_id}
     return render_template('index.html', title='Home', user=user, games=s.new_games())
 
@@ -35,9 +35,10 @@ def pick():
     else:
         debug = False
     print debug
-    s = steam.steam()
+    s = games.steam()
     user = {'steam_id': s.steam_id}
     count, game = s.pick_new()
-    early_access = steam.is_early_access(game['appid'])
+    game['early_access'] = games.is_early_access(game['appid'])
+    game['PCGW_url'] = games.get_pcgw_url(game['appid'])
     
-    return render_template('pick.html', title='Home', user=user, game=game, count=count, debug=debug, early_access=early_access)
+    return render_template('pick.html', title='Home', user=user, game=game, count=count, debug=debug)

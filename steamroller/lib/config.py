@@ -78,14 +78,20 @@ def get_config_file_options():
     option = {}
     option['name'] = 'STEAMCOMMUNITY_BASE_URL'
     option['mandatory'] = True
-    option['comment'] = "Base URL for Steamcommunity's vanity URLs"
+    option['comment'] = "Base URL for Steamcommunity's vanity URLs."
     option['default_value'] = 'https://steamcommunity.com/id'
     options.append(option)
     option = {}
-    option['name'] = 'STEAMAPP_DETAILS'
+    option['name'] = 'STEAMAPP_DETAILS_API'
     option['mandatory'] = True
-    option['comment'] = "Base URL for retrieving information on a Steam APPID"
+    option['comment'] = "Base URL for retrieving information on a Steam APPID."
     option['default_value'] = 'http://store.steampowered.com/api/appdetails?'
+    options.append(option)
+    option = {}
+    option['name'] = 'PCGW_API'
+    option['mandatory'] = True
+    option['comment'] = "Base URL for reaching the PCGamingWiki API."
+    option['default_value'] = 'http://pcgamingwiki.com/w/api.php?'
     options.append(option)
     return options
 

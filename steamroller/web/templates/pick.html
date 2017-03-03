@@ -12,11 +12,15 @@
             </br>
             {{ game.appid }} - {{ game.name }}
             </br>
-            <input type="button" class="button" value="Reroll!" onClick="window.location.reload()">
+            <a href="{{ game.PCGW_url }}">PCGamingWiki</a>
             </br>
             {% if early_access %}
             WARNING!!! Game is in early acess!!!
+            </br>
             {% endif %}
+            </br>
+            <input type="button" class="button" value="Reroll!" onClick="window.location.reload()">
+            </br>
             {% if debug %}
             {{ game }}
             {% endif %}

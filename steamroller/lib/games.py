@@ -121,7 +121,7 @@ def is_early_access(appid):
     """Queries the steam API for the game genres and returns true if 'Early
     Access' is among them"""
     
-    api_url = config.get_option('STEAMAPP_DETAILS')
+    api_url = config.get_option('STEAMAPP_DETAILS_API')
     params = { 'appids': appid }
     app_data = make_request_to_api(api_url, params)
     genres = app_data[str(appid)]['data']['genres']
@@ -134,3 +134,15 @@ def pick_game(games):
     count = len(games)
     pick = SystemRandom().randrange(count)
     return count, games[pick]
+
+def get_pcgw_url(appid):
+    """Returns the URL for the game in PCGamingWiki or false if not found."""
+
+    params = { 'action': 'askargs', 'format': 'json',
+                'conditions': 'Steam AppID::' + str(appid) }
+    api_url = config.get_option('PCGW_API')
+    url = make_request_to_api(api_url, params)['query']
+    if url['results']:
+        url = url['results'].values()[0]['fullurl']
+        return url
+    return False
