@@ -2,11 +2,16 @@ import ConfigParser
 import os
 
 CONFIG_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), '../config/config.cfg'))
+config = ConfigParser.ConfigParser()
+config.read(CONFIG_FILE)
+
 
 
 def get_option(option, option_type='str'):
-    """Grabs selected option from the config file and returns it in the format
-    requested"""
+    """
+    Grabs selected option from the config file and returns it in the format
+    requested
+    """
 
     option_value = config.get(get_section_name(), option)
     if option_type == 'str':
@@ -22,7 +27,9 @@ def get_section_name():
 
 
 def get_config_file_options():
-    """Default config file options"""
+    """
+    Default config file options
+    """
 
     options = []
     option = {}
@@ -43,7 +50,7 @@ def get_config_file_options():
     option['comment'] = "It's unlikely this will need to change, but just" + \
                         " in case."
     option['default_value'] = 'https://api.steampowered.com/' + \
-                              'IPlayerService/GetOwnedGames/v0001/?'
+                              'IPlayerService/GetOwnedGames/v0001/'
     options.append(option)
     option = {}
     option['name'] = 'VANITY_URL_TO_STEAMID_API'
@@ -51,7 +58,7 @@ def get_config_file_options():
     option['comment'] = "It's unlikely this will need to change, but just" + \
                         " in case."
     option['default_value'] = 'http://api.steampowered.com/ISteamUser/' + \
-                              'ResolveVanityURL/v0001/?'
+                              'ResolveVanityURL/v0001/'
     options.append(option)
     option = {}
     option['name'] = 'EXCLUDE'
@@ -85,24 +92,48 @@ def get_config_file_options():
     option['name'] = 'STEAMAPP_DETAILS_API'
     option['mandatory'] = True
     option['comment'] = "Base URL for retrieving information on a Steam APPID."
-    option['default_value'] = 'http://store.steampowered.com/api/appdetails?'
+    option['default_value'] = 'http://store.steampowered.com/api/appdetails'
+    options.append(option)
+    option = {}
+    option['name'] = 'STEAM_USER_INFO_API'
+    option['mandatory'] = True
+    option['comment'] = "Base URL for retrieving information on a Steam ID."
+    option['default_value'] = 'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0001/'
     options.append(option)
     option = {}
     option['name'] = 'PCGW_API'
     option['mandatory'] = True
     option['comment'] = "Base URL for reaching the PCGamingWiki API."
-    option['default_value'] = 'http://pcgamingwiki.com/w/api.php?'
+    option['default_value'] = 'http://pcgamingwiki.com/w/api.php'
+    options.append(option)
+    option = {}
+    option['name'] = 'DATABASE_PATH'
+    option['mandatory'] = True
+    option['comment'] = "Path to the DB."
+    option['default_value'] = 'steamroller/Data/app.db'
     options.append(option)
     return options
 
 
 def get_default_option(name):
-    """Returns one of the options from the default options"""
+    """
+    Returns one of the options from the default options
+    """
 
     for option in get_config_file_options():
         if option['name'] == name:
             return option
     return False
 
-config = ConfigParser.ConfigParser()
-config.read(CONFIG_FILE)
+class Flask_config():
+    WTF_CSRF_ENABLED = True
+    SECRET_KEY = 'you-will-never-guess'
+    
+    OPENID_PROVIDERS = [
+        {'name': 'Steam', 'url': 'http://steamcommunity.com/openid'},
+        {'name': 'Steam2', 'url': 'http://steamcommunity.com/openid/id/<username>'}]
+    
+    basedir = os.getcwd()
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, get_option('DATABASE_PATH'))
+    
+    SQLALCHEMY_TRACK_MODIFICATIONS = False

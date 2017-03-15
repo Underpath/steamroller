@@ -1,3 +1,5 @@
 config.cfg
 *.json
 *.pyc
+*.db
+*.sql

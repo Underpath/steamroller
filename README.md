@@ -12,6 +12,10 @@ Get rid of the burden of having to pick which game in your Steam library you wan
 ## Dependencies
 
 * requests
+* flask
+* flask-openid
+* flask-sqlalchemy
+* flask-wtf
 
 ## Usage
 

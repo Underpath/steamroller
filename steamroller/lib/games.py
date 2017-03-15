@@ -9,8 +9,10 @@ from random import SystemRandom
 
 
 def get_steamid(url):
-    """Takes a Steamcommunity vanity URL and returns the Steam ID for that
-    user. Uses a steam API for this."""
+    """
+    Takes a Steamcommunity vanity URL and returns the Steam ID for that user.
+    Uses a steam API for this.
+    """
 
     config_file.check(config.CONFIG_FILE,
                                   [config.get_default_option('API_KEY')])
@@ -48,16 +50,13 @@ def get_steamid(url):
 
 
 def make_request_to_api(base_url, params=None):
-    """Generic function to make HTTP requests, read the response as JSON and
-    return the response as dictionary."""
-
-    if params:
-        url = base_url + urlencode(params)
-    else:
-        url = base_url
-
+    """
+    Generic function to make HTTP requests, read the response as JSON and
+    return the response as dictionary.
+    """
+    
     try:
-        r = requests.get(url)
+        r = requests.get(base_url, params=params)
     except:
         print 'There was an error trying to reach the website.'
         exit()
@@ -66,8 +65,10 @@ def make_request_to_api(base_url, params=None):
 
 
 def steam_sort(games):
-    """Takes a list of games and returns that list sorted in the same order as
-    in Steam."""
+    """
+    Takes a list of games and returns that list sorted in the same order as in
+    Steam.
+    """
 
     determiners = config.get_option('DETERMINERS', 'str_list')
     for game in games:
@@ -80,10 +81,27 @@ def steam_sort(games):
     return sorted(games, key=itemgetter('sortname'))
 
 class steam():
+    
     def __init__(self):
         self.steam_id = config.get_option('STEAM_ID')
+
+    def user_info(self):
+        """
+        Returns user info from a Steam ID.
+        """
+        
+        params = {
+            'key': config.get_option('API_KEY'),
+            'steamids': self.steam_id
+        }
+        api_url = config.get_option('STEAM_USER_INFO_API')
+        user_info = make_request_to_api(api_url, params)['response']['players']['player'][0]
+        return user_info
+
     def games(self):
-        """Returns list of games owned by a Steam ID."""
+        """
+        Returns list of games owned by a Steam ID.
+        """
 
         params = {'key': config.get_option('API_KEY'),
           'steamid': config.get_option('STEAM_ID'), 'include_appinfo': 1,
@@ -91,9 +109,13 @@ class steam():
         games = make_request_to_api(config.get_option('OWNED_GAMES_API'),
                             params)['response']['games']
         return steam_sort(games)
+
+
     def new_games(self):
-        """Returns list of new games owned by a Steam ID. New games are those
-        with 0 playtime and those included/excluded in options."""
+        """
+        Returns list of new games owned by a Steam ID. New games are those
+        with 0 playtime and those included/excluded in options.
+        """
 
         new_games = []
         exclusions = config.get_option('EXCLUDE', 'int_list')
@@ -105,21 +127,31 @@ class steam():
             elif game['playtime_forever'] == 0 and game['appid'] not in exclusions:
                 new_games.append(game)
         return steam_sort(new_games)
+
+
     def pick_new(self):
-        """Returns game and details from the list of new games."""
+        """
+        Returns game and details from the list of new games.
+        """
 
         games = self.new_games()
         return pick_game(games)
+
+
     def pick_all(self):
-        """Returns game and details from the list of all games."""
+        """
+        Returns game and details from the list of all games.
+        """
 
         games = self.games()
         return pick_game(games)
 
 
 def is_early_access(appid):
-    """Queries the steam API for the game genres and returns true if 'Early
-    Access' is among them"""
+    """
+    Queries the steam API for the game genres and returns true if 'Early
+    Access' is among them
+    """
     
     api_url = config.get_option('STEAMAPP_DETAILS_API')
     params = { 'appids': appid }
@@ -136,7 +168,9 @@ def pick_game(games):
     return count, games[pick]
 
 def get_pcgw_url(appid):
-    """Returns the URL for the game in PCGamingWiki or false if not found."""
+    """
+    Returns the URL for the game in PCGamingWiki or false if not found.
+    """
 
     params = { 'action': 'askargs', 'format': 'json',
                 'conditions': 'Steam AppID::' + str(appid) }
@@ -146,3 +180,5 @@ def get_pcgw_url(appid):
         url = url['results'].values()[0]['fullurl']
         return url
     return False
+
+import urllib2
