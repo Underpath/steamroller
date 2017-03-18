@@ -82,8 +82,8 @@ def steam_sort(games):
 
 class steam():
     
-    def __init__(self):
-        self.steam_id = config.get_option('STEAM_ID')
+    def __init__(self, steam_id=config.get_option('STEAM_ID')):
+        self.steam_id = steam_id
 
     def user_info(self):
         """

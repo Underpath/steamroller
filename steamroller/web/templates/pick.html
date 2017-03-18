@@ -1,29 +1,25 @@
-<html>
-    <head>
-        <title>{{ title }} - Steamroller</title>
-        <link href="{{ url_for('static', filename='layout.css') }}" rel="stylesheet" type="text/css" media="all">
-    </head>
-    <body>
-        <h1>Hello, {{ user.steam_id }}!</h1>
-        <div id="middle"><p>
-            The following game was picked out of a total of {{ count }} games:
-            </br>
-            <img src="http://media.steampowered.com/steamcommunity/public/images/apps/{{game.appid}}/{{game.img_logo_url}}.jpg">
-            </br>
-            {{ game.appid }} - {{ game.name }}
-            </br>
+{% extends "base.html" %}
+{% block content %}
+    <p>
+        The following game was picked out of a total of {{ count }} games:
+        </br>
+        <img src="http://media.steampowered.com/steamcommunity/public/images/apps/{{game.appid}}/{{game.img_logo_url}}.jpg">
+        </br>
+        {{ game.appid }} - {{ game.name }}
+        </br>
+        {% if game.PCGW_url %}
             <a href="{{ game.PCGW_url }}">PCGamingWiki</a>
             </br>
-            {% if game.early_access %}
+        {% endif %}
+        {% if game.early_access %}
             WARNING!!! Game is in early acess!!!
             </br>
-            {% endif %}
-            </br>
-            <input type="button" class="button" value="Reroll!" onClick="window.location.reload()">
-            </br>
-            {% if debug %}
-            {{ game }}
-            {% endif %}
-        </p></div>
-    </body>
-</html>
+        {% endif %}
+        </br>
+        <input type="button" class="my_w3-btn w3-padding-12" value="Reroll!" onClick="window.location.reload()">
+        </br>
+        {% if debug %}
+        {{ game }}
+        {% endif %}
+    </p>
+{% endblock %}

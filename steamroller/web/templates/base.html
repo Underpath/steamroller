@@ -1,0 +1,86 @@
+<html>
+    <head>
+        {% if page %}
+            <title>{{ page.title }} - Steamroller</title>
+        {% else %}
+            <title>Steamroller</title>
+        {% endif %}
+        <link href="{{ url_for('static', filename='layout.css') }}" rel="stylesheet" type="text/css" media="all">
+    </head>
+    <body>
+        {% if user %}
+            <nav class="w3-sidebar w3-bar-block w3-collapse w3-animate-left w3-card-2" style="z-index:3;width:250px;" id="mySidebar">
+                <!--
+                <a class="w3-bar-item w3-button w3-border-bottom w3-large" href="#"><img src="https://www.w3schools.com/images/w3schools.png" style="width:80%;"></a>
+                -->
+                <a class="w3-bar-item w3-button w3-hide-large w3-large" href="javascript:void(0)" onclick="w3_close()">Close <i class="fa fa-remove"></i></a>
+                {% if page.location == 'home' %}
+                    <a class="w3-bar-item w3-button w3-dark-grey" href="/index">Home</a>
+                {% else %}
+                    <a class="w3-bar-item w3-button" href="/index">Home</a>
+                {% endif %}
+                
+                {% if page.location == 'all' %}
+                <a class="w3-bar-item w3-button w3-dark-grey" href="/all">All</a>
+                {% else %}
+                <a class="w3-bar-item w3-button" href="/all">All</a>
+                {% endif %}
+                
+                {% if page.location == 'new' %}
+                <a class="w3-bar-item w3-button w3-dark-grey" href="/new">New</a>
+                {% else %}
+                <a class="w3-bar-item w3-button" href="/new">New</a>
+                {% endif %}
+                
+                {% if page.location == 'pick' %}
+                <a class="w3-bar-item w3-button w3-dark-grey" href="/pick">Pick</a>
+                {% else %}
+                <a class="w3-bar-item w3-button" href="/pick">Pick</a>
+                {% endif %}
+                
+                {% if page.location == 'base' %}
+                <a class="w3-bar-item w3-button w3-dark-grey" href="/base">Base</a>
+                {% else %}
+                <a class="w3-bar-item w3-button" href="/base">Base</a>
+                {% endif %}
+                
+                <a class="w3-bar-item w3-button" href="/login"><b>Login</b></a>
+                <a class="w3-bar-item w3-button" href="/logout"><b>Logout</b></a>
+            </nav>
+            <div class="w3-main" style="margin-left:250px;">
+                <header class="w3-container w3-theme w3-padding-64" style="padding-left:32px;background-color:#4d4d4d">
+                    <h1 class="w3-xxxlarge w3-padding-16">Hello, {{ user.nickname }}!</h1>
+                </header>
+                
+                <div class="w3-container w3-padding-32" style="padding-left:32px">
+                
+                    {% if page %}
+                        <h2>{{ page.title }}</h2>
+                    {% else %}
+                        <h2>Steamroller</h2>
+                    {% endif %}
+                    {% with messages = get_flashed_messages() %}
+                      {% if messages %}
+                        <ul class=flashes>
+                        {% for message in messages %}
+                          <li>{{ message }}</li>
+                        {% endfor %}
+                        </ul>
+                      {% endif %}
+                    {% endwith %}
+                    
+                    
+                    {% block content %}
+                    {% endblock %}
+                    
+                    {% for game in games %}
+                    <div id="middle"><p>{{ game.name }} - {{ game.appid }}</p></div>
+                    {% endfor %}
+                </div>
+            <footer class="w3-container w3-theme w3-padding-32" style="padding-left:32px;background-color:#000000;">
+                <p>Copyright</p>
+            </footer>
+            </div>
+        {% endif %}
+    </body>
+</html>
