@@ -8,15 +8,16 @@ import re
 from steamroller.web.models import User
 from urlparse import urlparse, parse_qs
 
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if g.user is None:
             flash('You are not logged in')
             return redirect(url_for('index', next=request.url))
-            #return redirect(url_for('index'))
         return f(*args, **kwargs)
     return decorated_function
+
 
 @app.route('/')
 @app.route('/index')
@@ -31,11 +32,11 @@ def index():
     page['location'] = 'home'
     return render_template('base.html', page=page, user=user)
 
+
 @app.route('/config')
 def web_config():
-    #return 'asdf'
-    return  config.CONFIG_FILE
-    #return config.get_option('STEAM_ID')
+    return config.CONFIG_FILE
+
 
 @app.route('/all')
 @login_required
@@ -47,7 +48,9 @@ def all_games():
     page = {}
     page['title'] = 'All Games'
     page['location'] = 'all'
-    return render_template('list_games.html', page=page, user=user, games=s.games())
+    return render_template('list_games.html', page=page, user=user,
+                           games=s.games())
+
 
 @app.route('/new')
 @login_required
@@ -59,7 +62,9 @@ def new_games():
     page = {}
     page['title'] = 'New Games'
     page['location'] = 'new'
-    return render_template('list_games.html', page=page, user=user, games=s.new_games())
+    return render_template('list_games.html', page=page, user=user,
+                           games=s.new_games())
+
 
 @app.route('/pick')
 @login_required
@@ -80,11 +85,13 @@ def pick():
     page = {}
     page['title'] = 'Pick game'
     page['location'] = 'pick'
-    return render_template('pick.html', page=page, user=user, game=game, count=count, debug=debug)
+    return render_template('pick.html', page=page, user=user, game=game,
+                           count=count, debug=debug)
+
 
 @app.route('/base')
 def base():
-    user ={}
+    user = {}
     user['steam_id'] = 3
     user['nickname'] = 'god'
     page = {}
@@ -92,11 +99,13 @@ def base():
     page['location'] = 'base'
     return render_template('base.html', page=page, user=user)
 
+
 @app.before_request
 def before_request():
     g.user = None
     if 'user_id' in session:
         g.user = User.query.get(session['user_id'])
+
 
 @app.route('/login')
 @oid.loginhandler
@@ -105,11 +114,13 @@ def login():
         return redirect(url_for('index'))
     return oid.try_login('https://steamcommunity.com/openid')
 
+
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
     flash('You have been logged out')
     return redirect(url_for('index'))
+
 
 @oid.after_login
 def create_or_login(resp):

@@ -15,8 +15,11 @@ def no_config_file(path):
 
 
 def generate_basic_config(path):
-    """Checks if there's a config file, offers the option to the user to
-    overwrite if one is found, then generates the config file accordingly."""
+    """
+    Checks if there's a config file, offers the option to the user to
+    overwrite if one is found, then generates the config file accordingly.
+    """
+
     if os.path.isfile(path):
         while True:
             print 'Configuration file already exists, overwrite? [y/N]'
@@ -31,7 +34,10 @@ def generate_basic_config(path):
 
 
 def generate_config_file(path, options=DEFAULT_OPTIONS):
-    """Generate a config file with the provided options"""
+    """
+    Generate a config file with the provided options.
+    """
+
     config = ConfigParser.RawConfigParser(allow_no_value=True)
     config.optionxform = str
     section = steamroller_config.get_section_name()
@@ -47,9 +53,11 @@ def generate_config_file(path, options=DEFAULT_OPTIONS):
         config.write(configuration_file)
 
 
-def check(path=steamroller_config.CONFIG_FILE,
-                      options=DEFAULT_OPTIONS):
-    """Checks that the config file exists and has the minimum requirements."""
+def check(path=steamroller_config.CONFIG_FILE, options=DEFAULT_OPTIONS):
+    """
+    Checks that the config file exists and has the minimum requirements.
+    """
+
     checks = True
 
     if not os.path.isfile(path):

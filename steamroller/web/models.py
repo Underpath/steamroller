@@ -1,5 +1,6 @@
 from steamroller.web import db
 
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     steam_id = db.Column(db.String(40))
@@ -17,7 +18,7 @@ class User(db.Model):
             rv.nickname = nickname
             db.session.commit()
         return rv
-    
+
     @property
     def is_authenticated(self):
         return True
@@ -29,3 +30,7 @@ class User(db.Model):
     @property
     def is_anonymous(self):
         return False
+
+
+class Game(db.Model):
+    id = db.Column(db.Integer, primary_key=True)

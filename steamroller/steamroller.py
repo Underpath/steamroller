@@ -24,8 +24,10 @@ def main(param):
 
 
 def print_list(filtered='new'):
-    """Prints games to screen, depending on the 'filtered' parameter prints all
-    or only new ones."""
+    """
+    Prints games to screen, depending on the 'filtered' parameter prints all or
+    only new ones.
+    """
 
     s = games.steam()
     if filtered == 'new':

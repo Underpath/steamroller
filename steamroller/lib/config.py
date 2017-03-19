@@ -1,16 +1,16 @@
 import ConfigParser
 import os
 
-CONFIG_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), '../config/config.cfg'))
+CONFIG_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                           '../config/config.cfg'))
 config = ConfigParser.ConfigParser()
 config.read(CONFIG_FILE)
-
 
 
 def get_option(option, option_type='str'):
     """
     Grabs selected option from the config file and returns it in the format
-    requested
+    requested.
     """
 
     option_value = config.get(get_section_name(), option)
@@ -28,7 +28,7 @@ def get_section_name():
 
 def get_config_file_options():
     """
-    Default config file options
+    Default config file options.
     """
 
     options = []
@@ -98,7 +98,8 @@ def get_config_file_options():
     option['name'] = 'STEAM_USER_INFO_API'
     option['mandatory'] = True
     option['comment'] = "Base URL for retrieving information on a Steam ID."
-    option['default_value'] = 'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0001/'
+    option['default_value'] = 'http://api.steampowered.com/ISteamUser/' + \
+                              'GetPlayerSummaries/v0001/'
     options.append(option)
     option = {}
     option['name'] = 'PCGW_API'
@@ -125,15 +126,17 @@ def get_default_option(name):
             return option
     return False
 
+
 class Flask_config():
+    """
+    Stores the configuration for flask.
+    """
+
     WTF_CSRF_ENABLED = True
     SECRET_KEY = 'you-will-never-guess'
-    
-    OPENID_PROVIDERS = [
-        {'name': 'Steam', 'url': 'http://steamcommunity.com/openid'},
-        {'name': 'Steam2', 'url': 'http://steamcommunity.com/openid/id/<username>'}]
-    
+
     basedir = os.getcwd()
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, get_option('DATABASE_PATH'))
-    
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + \
+                              os.path.join(basedir, get_option('DATABASE_PATH'))
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
