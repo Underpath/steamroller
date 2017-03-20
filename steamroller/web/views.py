@@ -2,8 +2,8 @@ from steamroller.web import app, oid, db
 from steamroller.lib import config
 from flask import render_template, request, flash, redirect, g, session, url_for
 from functools import wraps
-from steamroller.lib import games
-from .forms import LoginForm
+from steamroller.lib import games as old_games
+import games
 import re
 from steamroller.web.models import User
 from urlparse import urlparse, parse_qs
@@ -38,18 +38,32 @@ def web_config():
     return config.CONFIG_FILE
 
 
+@app.route('/old_all')
+@login_required
+def old_all_games():
+    user = {}
+    user['steam_id'] = g.user.steam_id
+    user['nickname'] = g.user.nickname
+    s = old_games.steam(user['steam_id'])
+    page = {}
+    page['title'] = 'All Games'
+    page['location'] = 'all'
+    return render_template('list_games.html', page=page, user=user,
+                           games=s.games())
+
+
 @app.route('/all')
 @login_required
 def all_games():
     user = {}
     user['steam_id'] = g.user.steam_id
     user['nickname'] = g.user.nickname
-    s = games.steam(user['steam_id'])
+    s = games.Steam(user['steam_id'])
     page = {}
     page['title'] = 'All Games'
     page['location'] = 'all'
     return render_template('list_games.html', page=page, user=user,
-                           games=s.games())
+                           games=s.get_all_games())
 
 
 @app.route('/new')
@@ -58,7 +72,7 @@ def new_games():
     user = {}
     user['steam_id'] = g.user.steam_id
     user['nickname'] = g.user.nickname
-    s = games.steam(user['steam_id'])
+    s = old_games.steam(user['steam_id'])
     page = {}
     page['title'] = 'New Games'
     page['location'] = 'new'
@@ -77,10 +91,10 @@ def pick():
     user = {}
     user['steam_id'] = g.user.steam_id
     user['nickname'] = g.user.nickname
-    s = games.steam(user['steam_id'])
+    s = old_games.steam(user['steam_id'])
     count, game = s.pick_new()
-    game['early_access'] = games.is_early_access(game['appid'])
-    game['PCGW_url'] = games.get_pcgw_url(game['appid'])
+    game['early_access'] = old_games.is_early_access(game['appid'])
+    game['PCGW_url'] = old_games.get_pcgw_url(game['appid'])
     print game
     page = {}
     page['title'] = 'Pick game'
@@ -127,7 +141,7 @@ def create_or_login(resp):
     print resp.nickname
     _steam_id_re = re.compile('steamcommunity.com/openid/id/(.*?)$')
     steam_id = _steam_id_re.search(resp.identity_url).group(1)
-    s = games.steam(steam_id)
+    s = old_games.steam(steam_id)
     steamdata = s.user_info()
     nickname = steamdata['personaname']
     g.user = User.get_or_create(steam_id, nickname)

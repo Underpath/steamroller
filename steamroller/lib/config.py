@@ -9,8 +9,8 @@ config.read(CONFIG_FILE)
 
 def get_option(option, option_type='str'):
     """
-    Grabs selected option from the config file and returns it in the format
-    requested.
+    Grabs the value of the option from the config file and returns it in the
+    format requested.
     """
 
     option_value = config.get(get_section_name(), option)
@@ -118,7 +118,7 @@ def get_config_file_options():
 
 def get_default_option(name):
     """
-    Returns one of the options from the default options
+    Returns one of the options from the default options and its default values.
     """
 
     for option in get_config_file_options():
@@ -135,7 +135,7 @@ class Flask_config():
     WTF_CSRF_ENABLED = True
     SECRET_KEY = 'you-will-never-guess'
 
-    basedir = os.getcwd()
+    basedir = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + \
                               os.path.join(basedir, get_option('DATABASE_PATH'))
 
