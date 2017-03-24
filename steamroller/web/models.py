@@ -6,6 +6,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     steam_id = db.Column(db.String(40), unique=True)
     nickname = db.Column(db.String(80))
+    games_updated = db.Column(db.DateTime)
 
     @staticmethod
     def get_or_create(steam_id, nickname):
@@ -24,7 +25,8 @@ class User(db.Model):
 class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(40))
-    is_early_access = db.Column(db.Boolean, default=False)
+    is_early_access = db.Column(db.Boolean)
+    last_checked = db.Column(db.Date)
     
     def __init__(self, title, is_early_access=False):
         self.title = title
@@ -59,16 +61,3 @@ class Games_in_Store(db.Model):
     
     store = db.relationship(Store, backref="games_in_store")
     game = db.relationship(Game, backref="games_in_store")
-    
-
-
-"""
-from steamroller.web import db
-from steamroller.web import models
-db.create_all()
-
-game = models.Game.query.get(3)
-user = models.User.query.get(1)
-models.Owned_Games(user=user, game=game, is_new=True)
-db.session.commit()
-"""

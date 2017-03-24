@@ -5,6 +5,7 @@ from sys import exit
 from random import SystemRandom
 from steamroller.web import db
 import models
+from datetime import datetime
 
 
 def steam_sort(games):
@@ -123,13 +124,26 @@ class Steam():
         Returns list of games owned by a Steam ID.
         """
 
-        user = models.User.query.filter_by(steam_id=self.steam_id).one_or_none()
-        games_query = models.Owned_Games.query.filter_by(user=user).all()
+        user = models.User.query.filter_by(steam_id=self.steam_id)
+        user = user.one_or_none()
+        time_since_update = datetime.now() - user.games_updated
+        threshold = int(config.get_option('USER_REFRESH_TIME'))
+        if time_since_update.total_seconds() > threshold:
+            print 'Get games from steam and update db.'
+            params = {'key': config.get_option('API_KEY'),
+                      'steamid': self.steam_id,
+                      'include_appinfo': 1, 'format': 'json'}
+            games = make_request_to_api(config.get_option('OWNED_GAMES_API'),
+                                        params)['response']['games']
+            user.games_updated = datetime.now()
+            update_games_for_user(games, user)
 
-        games = []
-
-        for game in games_query:
-            games.append({'name': models.Game.query.get(game.game_id).title})
+        else:
+            print 'get_all_games from local DB'
+            games_query = models.Owned_Games.query.filter_by(user=user).all()
+            games = []
+            for game in games_query:
+                games.append({'name': models.Game.query.get(game.game_id).title})
 
         return steam_sort(games)
 
@@ -206,3 +220,45 @@ def get_pcgw_url(appid):
         url = url['results'].values()[0]['fullurl']
         return url
     return False
+
+def make_request_to_api(base_url, params=None):
+    """
+    Generic function to make HTTP requests, read the response as JSON and
+    return the response as dictionary.
+    """
+
+    try:
+        r = requests.get(base_url, params=params)
+    except:
+        print 'There was an error trying to reach the website.'
+        exit()
+    if r.status_code == 200:
+        return r.json()
+
+def update_games_for_user(games, user):
+    store = models.Store.query.filter_by(name='Steam').one_or_none()
+    records = []
+    with db.session.no_autoflush:
+        for game in games:
+            game_obj = models.Game.query.filter_by(title=game['name']).one_or_none()
+            if not game_obj:
+                game_obj = models.Game(game['name'])
+                records.append(game_obj)
+                game_in_store = models.Games_in_Store(store=store, game=game_obj, game_store_id=game['appid']) 
+                records.append(game_in_store)
+            
+            game_owned = models.Owned_Games.query.filter_by(game=game_obj,user=user).one_or_none()
+            
+            if game['playtime_forever'] == 0:
+                is_new = True
+            else:
+                is_new = False
+            
+            if game_owned:
+                if game_owned.is_new is not is_new:
+                    game_owned.is_new = is_new
+                    records.append(game_owned)
+            else:
+                records.append(models.Owned_Games(user=user, game=game_obj, is_new=is_new))
+    db.session.add_all(records)
+    db.session.commit()

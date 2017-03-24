@@ -113,6 +113,14 @@ def get_config_file_options():
     option['comment'] = "Path to the DB."
     option['default_value'] = 'steamroller/Data/app.db'
     options.append(option)
+    option = {}
+    option['name'] = 'USER_REFRESH_TIME'
+    option['mandatory'] = True
+    option['comment'] = "How much time must pass in seconds before a" + \
+                        " user's games are fetched again from Steam" + \
+                        " instead of the local DB."
+    option['default_value'] = '600'
+    options.append(option)
     return options
 
 
