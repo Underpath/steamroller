@@ -118,8 +118,16 @@ def get_config_file_options():
     option['mandatory'] = True
     option['comment'] = "How much time must pass in seconds before a" + \
                         " user's games are fetched again from Steam" + \
-                        " instead of the local DB."
+                        " instead of the local DB. Default 10 mins."
     option['default_value'] = '600'
+    options.append(option)
+    option = {}
+    option['name'] = 'GAME_REFRESH_TIME'
+    option['mandatory'] = True
+    option['comment'] = "How much time must pass in seconds before a" + \
+                        " game's attributes are updated from Steam instead" + \
+                        " of the local DB. Default 1 day."
+    option['default_value'] = '86400'
     options.append(option)
     return options
 

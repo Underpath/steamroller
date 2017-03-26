@@ -93,10 +93,8 @@ def pick():
     user = {}
     user['steam_id'] = g.user.steam_id
     user['nickname'] = g.user.nickname
-    s = old_games.steam(user['steam_id'])
+    s = games.Steam(user['steam_id'])
     count, game = s.pick_new()
-    game['early_access'] = old_games.is_early_access(game['appid'])
-    game['PCGW_url'] = old_games.get_pcgw_url(game['appid'])
     page = {}
     page['title'] = 'Pick game'
     page['location'] = 'pick'

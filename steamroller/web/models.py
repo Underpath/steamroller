@@ -25,11 +25,13 @@ class User(db.Model):
 class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(40))
-    is_early_access = db.Column(db.Boolean)
-    last_checked = db.Column(db.Date)
+    is_early_access = db.Column(db.Integer, default=None)
+    img_logo_url = db.Column(db.String(40))
+    last_checked = db.Column(db.DateTime)
     
-    def __init__(self, name, is_early_access=False):
+    def __init__(self, name, img_logo_url, is_early_access=None):
         self.name = name
+        self.img_logo_url = img_logo_url
         self.is_early_access = is_early_access
 
 
