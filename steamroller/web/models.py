@@ -24,12 +24,12 @@ class User(db.Model):
 
 class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(40))
+    name = db.Column(db.String(40))
     is_early_access = db.Column(db.Boolean)
     last_checked = db.Column(db.Date)
     
-    def __init__(self, title, is_early_access=False):
-        self.title = title
+    def __init__(self, name, is_early_access=False):
+        self.name = name
         self.is_early_access = is_early_access
 
 
@@ -46,8 +46,8 @@ class Owned_Games(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     game_id = db.Column(db.Integer, db.ForeignKey('game.id'), primary_key=True)
     is_new = db.Column(db.Boolean)
-    include = db.Column(db.Boolean)
-    exclude = db.Column(db.Boolean)
+    include = db.Column(db.Boolean, default=False)
+    exclude = db.Column(db.Boolean, default=False)
     
     user = db.relationship(User, backref="owned_games")
     game = db.relationship(Game, backref="owned_games")

@@ -6,6 +6,7 @@ from random import SystemRandom
 from steamroller.web import db
 import models
 from datetime import datetime
+from sqlalchemy import or_
 
 
 def steam_sort(games):
@@ -104,6 +105,8 @@ class Steam():
 
     def __init__(self, steam_id=config.get_option('STEAM_ID')):
         self.steam_id = steam_id
+        self.user = models.User.query.filter_by(steam_id=steam_id)
+        self.user = self.user.one_or_none()
 
     def user_info(self):
         """
@@ -124,28 +127,13 @@ class Steam():
         Returns list of games owned by a Steam ID.
         """
 
-        user = models.User.query.filter_by(steam_id=self.steam_id)
-        user = user.one_or_none()
-        time_since_update = datetime.now() - user.games_updated
-        threshold = int(config.get_option('USER_REFRESH_TIME'))
-        if time_since_update.total_seconds() > threshold:
-            print 'Get games from steam and update db.'
-            params = {'key': config.get_option('API_KEY'),
-                      'steamid': self.steam_id,
-                      'include_appinfo': 1, 'format': 'json'}
-            games = make_request_to_api(config.get_option('OWNED_GAMES_API'),
-                                        params)['response']['games']
-            user.games_updated = datetime.now()
-            update_games_for_user(games, user)
+        user = self.user
+        trigger_update(user)
 
-        else:
-            print 'get_all_games from local DB'
-            games_query = models.Owned_Games.query.filter_by(user=user).all()
-            games = []
-            for game in games_query:
-                games.append({'name': models.Game.query.get(game.game_id).title})
+        games_query = models.Owned_Games.query.filter_by(user=user).all()
 
-        return steam_sort(games)
+        return result_to_dict(games_query)
+
 
     def new_games(self):
         """
@@ -153,17 +141,12 @@ class Steam():
         with 0 playtime and those included/excluded in options.
         """
 
-        new_games = []
-        exclusions = config.get_option('EXCLUDE', 'int_list')
-        inclusions = config.get_option('INCLUDE', 'int_list')
-        games = self.games()
-        for game in games:
-            if game['appid'] in inclusions:
-                new_games.append(game)
-            elif game['playtime_forever'] == 0 and \
-                    game['appid'] not in exclusions:
-                new_games.append(game)
-        return steam_sort(new_games)
+        user = self.user
+        trigger_update(user)
+
+        games_query = models.Owned_Games.query.filter(models.Owned_Games.user == user, models.Owned_Games.exclude == False, or_(models.Owned_Games.include == True, models.Owned_Games.is_new == True)).all()
+
+        return result_to_dict(games_query)
 
     def pick_new(self):
         """
@@ -235,25 +218,56 @@ def make_request_to_api(base_url, params=None):
     if r.status_code == 200:
         return r.json()
 
-def update_games_for_user(games, user):
+def trigger_update(user):
+    """
+    Takes a user object from the models and returns whether games associated
+    with it need to be updated based on the time threshold defined in the
+    configuration.
+    """
+
+    if user.games_updated:
+        time_since_update = datetime.now() - user.games_updated
+        threshold = int(config.get_option('USER_REFRESH_TIME'))
+        if time_since_update.total_seconds() < threshold:
+            print "Fetching games from local DB."
+            return False
+    print "Updating games for user."
+    update_games_for_user(user)
+    return True
+
+def update_games_for_user(user):
+    """
+    Takes a list of games and a user object from the models and updates games
+    owned by that user, also adding any games that might be missing from the
+    DB.
+    """
+
+    params = {'key': config.get_option('API_KEY'),
+              'steamid': user.steam_id,
+              'include_appinfo': 1, 'format': 'json'}
+    games = make_request_to_api(config.get_option('OWNED_GAMES_API'),
+                                params)['response']['games']
+    # {u'playtime_forever': 12, u'name': u'Zombie Shooter', u'img_logo_url': u'2e4082032b2a7e8b1782fc7515fcf5c4056d5050', u'appid': 33130, u'img_icon_url': u'db67664d7085947dd8d7dd74739230d9a09be5c7', 'sortname': u'zombie shooter'}
+    user.games_updated = datetime.now()
+
     store = models.Store.query.filter_by(name='Steam').one_or_none()
     records = []
     with db.session.no_autoflush:
         for game in games:
-            game_obj = models.Game.query.filter_by(title=game['name']).one_or_none()
+            game_obj = models.Game.query.filter_by(name=game['name']).one_or_none()
             if not game_obj:
                 game_obj = models.Game(game['name'])
                 records.append(game_obj)
-                game_in_store = models.Games_in_Store(store=store, game=game_obj, game_store_id=game['appid']) 
+                game_in_store = models.Games_in_Store(store=store, game=game_obj, game_store_id=game['appid'])
                 records.append(game_in_store)
-            
+
             game_owned = models.Owned_Games.query.filter_by(game=game_obj,user=user).one_or_none()
-            
+
             if game['playtime_forever'] == 0:
                 is_new = True
             else:
                 is_new = False
-            
+
             if game_owned:
                 if game_owned.is_new is not is_new:
                     game_owned.is_new = is_new
@@ -262,3 +276,12 @@ def update_games_for_user(games, user):
                 records.append(models.Owned_Games(user=user, game=game_obj, is_new=is_new))
     db.session.add_all(records)
     db.session.commit()
+
+def result_to_dict(games_query):
+    games = []
+    for game in games_query:
+        game_obj = models.Game.query.get(game.game_id)
+        game_details = game_obj.__dict__
+        game_details.pop('_sa_instance_state', None)
+        games.append(game_details)
+    return steam_sort(games)

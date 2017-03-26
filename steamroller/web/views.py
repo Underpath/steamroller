@@ -22,11 +22,10 @@ def login_required(f):
 @app.route('/')
 @app.route('/index')
 def index():
-    user = {'steam_id': config.get_option('STEAM_ID')}
     if g.user:
-        user['nickname'] = g.user.nickname
+        user = {'nickname': g.user.nickname}
     else:
-        user['nickname'] = 'None'
+        user = {'nickname': 'None'}
     page = {}
     page['title'] = 'Home'
     page['location'] = 'home'
@@ -72,10 +71,13 @@ def new_games():
     user = {}
     user['steam_id'] = g.user.steam_id
     user['nickname'] = g.user.nickname
-    s = old_games.steam(user['steam_id'])
+    s = games.Steam(user['steam_id'])
     page = {}
     page['title'] = 'New Games'
     page['location'] = 'new'
+    
+    s = games.Steam(user['steam_id'])
+    
     return render_template('list_games.html', page=page, user=user,
                            games=s.new_games())
 
@@ -95,7 +97,6 @@ def pick():
     count, game = s.pick_new()
     game['early_access'] = old_games.is_early_access(game['appid'])
     game['PCGW_url'] = old_games.get_pcgw_url(game['appid'])
-    print game
     page = {}
     page['title'] = 'Pick game'
     page['location'] = 'pick'
@@ -138,10 +139,9 @@ def logout():
 
 @oid.after_login
 def create_or_login(resp):
-    print resp.nickname
     _steam_id_re = re.compile('steamcommunity.com/openid/id/(.*?)$')
     steam_id = _steam_id_re.search(resp.identity_url).group(1)
-    s = old_games.steam(steam_id)
+    s = games.Steam(steam_id)
     steamdata = s.user_info()
     nickname = steamdata['personaname']
     g.user = User.get_or_create(steam_id, nickname)
