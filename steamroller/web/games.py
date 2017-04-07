@@ -43,9 +43,8 @@ class Steam():
         trigger_update(user)
 
         games_query = models.Owned_Games.query.filter_by(user=user).all()
-
-        return result_to_dict(games_query)
-
+        games = result_to_dict(games_query)
+        return games
 
     def new_games(self):
         """
@@ -55,8 +54,12 @@ class Steam():
 
         user = self.user
         trigger_update(user)
-
-        games_query = models.Owned_Games.query.filter(models.Owned_Games.user == user, models.Owned_Games.exclude == False, or_(models.Owned_Games.include == True, models.Owned_Games.is_new == True)).all()
+        games_query = models.Owned_Games.query
+        games_query = games_query.filter(models.Owned_Games.user == user,
+                                         models.Owned_Games.exclude == False,
+                                         or_(models.Owned_Games.include == True,
+                                             models.Owned_Games.is_new == True))
+        games_query = games_query.all()
         return result_to_dict(games_query)
 
     def pick_new(self):
@@ -103,15 +106,15 @@ def is_early_access(game_id):
     """
 
     game = models.Game.query.get(game_id)
-    
-    if game.is_early_access == None or game.is_early_access == True:
+
+    if game.is_early_access is None or game.is_early_access is True:
         if game.last_checked:
             time_since_update = datetime.now() - game.last_checked
             threshold = int(config.get_option('GAME_REFRESH_TIME'))
             if time_since_update.total_seconds() < threshold:
                 print "Game updated recently, returning value from DB."
                 return bool(game.is_early_access)
-        
+
         print "Checking early access status on Steam."
         api_url = config.get_option('STEAMAPP_DETAILS_API')
         appid = game.games_in_store[0].game_store_id
@@ -129,11 +132,12 @@ def is_early_access(game_id):
         db.session.add(game)
         db.session.commit()
         return bool(game.is_early_access)
-        
+
         return False
     else:
         print "Not early access according to the DB."
         return False
+
 
 def pick_game(games):
     """
@@ -151,9 +155,10 @@ def get_app_id(game_id):
     """
     Given one local game_id, return the corresponding steam appid.
     """
-    
+
     game = models.Game.query.get(game_id)
     return game.games_in_store[0].game_store_id
+
 
 def get_pcgw_url(game_id):
     """
@@ -170,6 +175,7 @@ def get_pcgw_url(game_id):
         return url
     return False
 
+
 def make_request_to_api(base_url, params=None):
     """
     Generic function to make HTTP requests, read the response as JSON and
@@ -183,6 +189,7 @@ def make_request_to_api(base_url, params=None):
         exit()
     if r.status_code == 200:
         return r.json()
+
 
 def trigger_update(user):
     """
@@ -201,6 +208,7 @@ def trigger_update(user):
     update_games_for_user(user)
     return True
 
+
 def update_games_for_user(user):
     """
     Takes a list of games and a user object from the models and updates games
@@ -213,21 +221,30 @@ def update_games_for_user(user):
               'include_appinfo': 1, 'format': 'json'}
     games = make_request_to_api(config.get_option('OWNED_GAMES_API'),
                                 params)['response']['games']
-    # {u'playtime_forever': 12, u'name': u'Zombie Shooter', u'img_logo_url': u'2e4082032b2a7e8b1782fc7515fcf5c4056d5050', u'appid': 33130, u'img_icon_url': u'db67664d7085947dd8d7dd74739230d9a09be5c7', 'sortname': u'zombie shooter'}
+    # {u'playtime_forever': 12, u'name': u'Zombie Shooter',
+    # u'img_logo_url': u'2e4082032b2a7e8b1782fc7515fcf5c4056d5050',
+    # u'appid': 33130,
+    # u'img_icon_url': u'db67664d7085947dd8d7dd74739230d9a09be5c7',
+    # 'sortname': u'zombie shooter'}
     user.games_updated = datetime.now()
 
     store = models.Store.query.filter_by(name='Steam').one_or_none()
     records = []
     with db.session.no_autoflush:
         for game in games:
-            game_obj = models.Game.query.filter_by(name=game['name']).one_or_none()
+            game_obj = models.Game.query.filter_by(name=game['name'])
+            game_obj = game_obj.one_or_none()
             if not game_obj:
                 game_obj = models.Game(game['name'], game['img_logo_url'])
                 records.append(game_obj)
-                game_in_store = models.Games_in_Store(store=store, game=game_obj, game_store_id=game['appid'])
+                game_in_store = models.Games_in_Store(store=store,
+                                                      game=game_obj,
+                                                      game_store_id=game['appid'])
                 records.append(game_in_store)
 
-            game_owned = models.Owned_Games.query.filter_by(game=game_obj,user=user).one_or_none()
+            game_owned = models.Owned_Games.query.filter_by(game=game_obj,
+                                                            user=user)
+            game_owned = game_owned.one_or_none()
 
             if game['playtime_forever'] == 0:
                 is_new = True
@@ -239,9 +256,11 @@ def update_games_for_user(user):
                     game_owned.is_new = is_new
                     records.append(game_owned)
             else:
-                records.append(models.Owned_Games(user=user, game=game_obj, is_new=is_new))
+                records.append(models.Owned_Games(user=user, game=game_obj,
+                                                  is_new=is_new))
     db.session.add_all(records)
     db.session.commit()
+
 
 def result_to_dict(games_query):
     games = []
@@ -249,5 +268,10 @@ def result_to_dict(games_query):
         game_obj = models.Game.query.get(game.game_id)
         game_details = game_obj.__dict__
         game_details.pop('_sa_instance_state', None)
+        if game.exclude is False and (game.include is True or game.is_new is
+                                      True):
+            game_details['is_new'] = True
+        else:
+            game_details['is_new'] = False
         games.append(game_details)
     return steam_sort(games)

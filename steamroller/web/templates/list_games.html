@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
     {% for game in games %}
-        <div id="middle"><p>{{ game.name }}</p></div>
+        {% if game.is_new %}
+            <div id="middle"><p><font color=green>✔</font>
+        {% else %}
+            <div id="middle"><p><font color=red>✘</font>
+        {% endif %}
+        {{ game.name }}</p></div>
+        <!-- ✔ ✘ -->
     {% endfor %}
 {% endblock %}

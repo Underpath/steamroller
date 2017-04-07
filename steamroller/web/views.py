@@ -1,6 +1,7 @@
 from steamroller.web import app, oid, db
 from steamroller.lib import config
-from flask import render_template, request, flash, redirect, g, session, url_for
+from flask import render_template, request, flash, redirect, g, session, \
+    url_for
 from functools import wraps
 from steamroller.lib import games as old_games
 import games
@@ -61,8 +62,9 @@ def all_games():
     page = {}
     page['title'] = 'All Games'
     page['location'] = 'all'
+    all_games = s.get_all_games()
     return render_template('list_games.html', page=page, user=user,
-                           games=s.get_all_games())
+                           games=all_games)
 
 
 @app.route('/new')
@@ -75,9 +77,9 @@ def new_games():
     page = {}
     page['title'] = 'New Games'
     page['location'] = 'new'
-    
+
     s = games.Steam(user['steam_id'])
-    
+
     return render_template('list_games.html', page=page, user=user,
                            games=s.new_games())
 
