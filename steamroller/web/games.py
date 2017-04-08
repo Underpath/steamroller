@@ -1,7 +1,6 @@
 from steamroller.lib import config
 import requests
 from operator import itemgetter
-from sys import exit
 from random import SystemRandom
 from steamroller.web import db
 import models
@@ -120,19 +119,24 @@ def is_early_access(game_id):
         appid = game.games_in_store[0].game_store_id
         params = {'appids': appid}
         app_data = make_request_to_api(api_url, params)
-        genres = app_data[str(appid)]['data']['genres']
-        game.last_checked = datetime.now()
-        for genre in genres:
-            if int(genre['id']) == 70:
-                game.is_early_access = True
-                db.session.add(game)
-                db.session.commit()
-                return bool(game.is_early_access)
-        game.is_early_access = False
-        db.session.add(game)
-        db.session.commit()
-        return bool(game.is_early_access)
-
+        if not app_data:
+            return False
+        for key in app_data:
+            if app_data[key]['success'] is False:
+                print "Request to API returned unsuccesful."
+                return False
+            genres = app_data[str(appid)]['data']['genres']
+            game.last_checked = datetime.now()
+            for genre in genres:
+                if int(genre['id']) == 70:
+                    game.is_early_access = True
+                    db.session.add(game)
+                    db.session.commit()
+                    return bool(game.is_early_access)
+            game.is_early_access = False
+            db.session.add(game)
+            db.session.commit()
+            return bool(game.is_early_access)
         return False
     else:
         print "Not early access according to the DB."
@@ -184,11 +188,17 @@ def make_request_to_api(base_url, params=None):
 
     try:
         r = requests.get(base_url, params=params)
+        print "Making request to: " + r.url
     except:
         print 'There was an error trying to reach the website.'
-        exit()
+        return False
     if r.status_code == 200:
-        return r.json()
+        response = r.json()
+        return response
+    else:
+        print "API request returned non 200 status code:\n\tURL: " + r.url + \
+            "Status code: " + str(r.status_code)
+    return False
 
 
 def trigger_update(user):
