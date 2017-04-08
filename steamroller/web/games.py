@@ -105,8 +105,7 @@ def is_early_access(game_id):
     """
 
     game = models.Game.query.get(game_id)
-
-    if game.is_early_access is None or game.is_early_access is True:
+    if game.is_early_access is None or game.is_early_access == True:
         if game.last_checked:
             time_since_update = datetime.now() - game.last_checked
             threshold = int(config.get_option('GAME_REFRESH_TIME'))
