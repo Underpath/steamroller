@@ -19,31 +19,31 @@
                 {% else %}
                     <a class="w3-bar-item w3-button" href="/index">Home</a>
                 {% endif %}
-                
+
                 {% if page.location == 'all' %}
                 <a class="w3-bar-item w3-button w3-dark-grey" href="/all">All</a>
                 {% else %}
                 <a class="w3-bar-item w3-button" href="/all">All</a>
                 {% endif %}
-                
+
                 {% if page.location == 'new' %}
                 <a class="w3-bar-item w3-button w3-dark-grey" href="/new">New</a>
                 {% else %}
                 <a class="w3-bar-item w3-button" href="/new">New</a>
                 {% endif %}
-                
+
                 {% if page.location == 'pick' %}
                 <a class="w3-bar-item w3-button w3-dark-grey" href="/pick">Pick</a>
                 {% else %}
                 <a class="w3-bar-item w3-button" href="/pick">Pick</a>
                 {% endif %}
-                
+
                 {% if page.location == 'base' %}
-                <a class="w3-bar-item w3-button w3-dark-grey" href="/base">Base</a>
+                <a class="w3-bar-item w3-button w3-dark-grey" href="/remove">remove</a>
                 {% else %}
-                <a class="w3-bar-item w3-button" href="/base">Base</a>
+                <a class="w3-bar-item w3-button" href="/remove">remove</a>
                 {% endif %}
-                
+
                 <a class="w3-bar-item w3-button" href="/login"><b>Login</b></a>
                 <a class="w3-bar-item w3-button" href="/logout"><b>Logout</b></a>
             </nav>
@@ -51,9 +51,9 @@
                 <header class="w3-container w3-theme w3-padding-64" style="padding-left:32px;background-color:#4d4d4d">
                     <h1 class="w3-xxxlarge w3-padding-16">Hello, {{ user.nickname }}!</h1>
                 </header>
-                
+
                 <div class="w3-container w3-padding-32" style="padding-left:32px">
-                
+
                     {% if page %}
                         <h2>{{ page.title }}</h2>
                     {% else %}
@@ -68,8 +68,8 @@
                         </ul>
                       {% endif %}
                     {% endwith %}
-                    
-                    
+
+
                     {% block content %}
                     {% endblock %}
                 </div>

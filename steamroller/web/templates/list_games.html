@@ -2,11 +2,22 @@
 {% block content %}
     {% for game in games %}
         {% if game.is_new %}
-            <div id="middle"><p><font color=green>✔</font>
+            <div id="middle"><p>
+                <form action = "/change_game_preference" method = "post">
+                    <font color=green>✔</font>{{ game.name }}
+                    <input type="text" name="game_id" value="{{ game.id }}" readonly hidden=True/>
+                    <input type="submit" class="my_w3-btn w3-padding-12" name="operation" value="remove" />
+                </form>
+            </p></div>
         {% else %}
-            <div id="middle"><p><font color=red>✘</font>
+            <div id="middle"><p>
+                <form action = "/change_game_preference" method = "post">
+                    <font color=red>✘</font>{{ game.name }}
+                    <input type="text" name="game_id" value="{{ game.id }}" readonly hidden=True/>
+                    <input type="submit" class="my_w3-btn w3-padding-12" name="operation" value="add" />
+                </form>
+            </p></div>
         {% endif %}
-        {{ game.name }}</p></div>
         <!-- ✔ ✘ -->
     {% endfor %}
 {% endblock %}

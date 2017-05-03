@@ -104,6 +104,26 @@ def pick():
                            count=count, debug=debug)
 
 
+@app.route('/change_game_preference', methods=['POST'])
+@login_required
+def change_game_preference():
+    """
+    Takes a game ID through a post request and removes it from the elegible
+    games pool.
+    """
+    #game_id = request.args.post('game_id', '', int)
+    #operation = request.args.post('operation', '', str)
+    game_id = request.form['game_id']
+    operation = request.form['operation']
+    print game_id
+    print operation
+    if not operation or not game_id:
+        print "Not enough parameters."
+        return "ERROR"
+    games.change_game_preference(g.user.steam_id, game_id, operation)
+    return redirect(request.referrer)
+
+
 @app.route('/base')
 def base():
     user = {}

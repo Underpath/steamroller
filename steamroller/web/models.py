@@ -28,7 +28,7 @@ class Game(db.Model):
     is_early_access = db.Column(db.Integer, default=None)
     img_logo_url = db.Column(db.String(40))
     last_checked = db.Column(db.DateTime)
-    
+
     def __init__(self, name, img_logo_url, is_early_access=None):
         self.name = name
         self.img_logo_url = img_logo_url
@@ -38,7 +38,7 @@ class Game(db.Model):
 class Store(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30))
-    
+
     def __init__(self, name):
         self.name = name
 
@@ -50,7 +50,7 @@ class Owned_Games(db.Model):
     is_new = db.Column(db.Boolean)
     include = db.Column(db.Boolean, default=False)
     exclude = db.Column(db.Boolean, default=False)
-    
+
     user = db.relationship(User, backref="owned_games")
     game = db.relationship(Game, backref="owned_games")
 
@@ -60,6 +60,6 @@ class Games_in_Store(db.Model):
     store_id = db.Column(db.Integer, db.ForeignKey('store.id'), primary_key=True)
     game_id = db.Column(db.Integer, db.ForeignKey('game.id'), primary_key=True)
     game_store_id = db.Column(db.Integer)
-    
+
     store = db.relationship(Store, backref="games_in_store")
     game = db.relationship(Game, backref="games_in_store")

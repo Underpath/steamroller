@@ -21,7 +21,7 @@ class Steam():
 
     def user_info(self):
         """
-        Returns user info from a Steam ID.
+        Queries the steam API using the steam ID and returns user info.
         """
 
         params = {
@@ -54,6 +54,7 @@ class Steam():
         user = self.user
         trigger_update(user)
         games_query = models.Owned_Games.query
+
         games_query = games_query.filter(models.Owned_Games.user == user,
                                          models.Owned_Games.exclude == False,
                                          or_(models.Owned_Games.include == True,
@@ -284,3 +285,28 @@ def result_to_dict(games_query):
             game_details['is_new'] = False
         games.append(game_details)
     return steam_sort(games)
+
+
+def change_game_preference(steam_id, game_id, operation):
+    """
+    Function to change whether a game should be included or excluded when
+    listing new games for a user.
+    """
+    user = models.User.query.filter_by(steam_id=steam_id).one_or_none()
+    owned_game_obj = models.Owned_Games.query.filter_by(game_id=game_id, user=user).one_or_none()
+
+    if not owned_game_obj:
+        print "Seems user " + str(user.id) + "does not own game " + str(game_id)
+
+    if operation == 'remove' and owned_game_obj.exclude is False:
+        owned_game_obj.exclude = True
+        owned_game_obj.include = False
+        print "Excluding game " + str(game_id) + " for user " + str(user.id)
+    elif operation == 'add' and owned_game_obj.include is False:
+        owned_game_obj.exclude = False
+        owned_game_obj.include = True
+        print "Including game " + str(game_id) + " for user " + str(user.id)
+    else:
+        print "Game already excluded."
+    db.session.add(owned_game_obj)
+    db.session.commit()
