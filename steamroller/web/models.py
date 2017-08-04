@@ -6,18 +6,23 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     steam_id = db.Column(db.String(40), unique=True)
     nickname = db.Column(db.String(80))
+    avatar_url = db.Column(db.String(120))
     games_updated = db.Column(db.DateTime)
 
     @staticmethod
-    def get_or_create(steam_id, nickname):
+    def get_or_create(steam_id, nickname, avatar_url):
         rv = User.query.filter_by(steam_id=steam_id).first()
         if rv is None:
             rv = User()
             rv.steam_id = steam_id
             rv.nickname = nickname
+            rv.avatar_url = avatar_url
             db.session.add(rv)
-        elif rv.nickname != nickname:
-            rv.nickname = nickname
+        else:
+            if rv.nickname != nickname:
+                rv.nickname = nickname
+            if rv.avatar_url != avatar_url:
+                rv.avatar_url = avatar_url
             db.session.commit()
         return rv
 
@@ -53,6 +58,7 @@ class Owned_Games(db.Model):
 
     user = db.relationship(User, backref="owned_games")
     game = db.relationship(Game, backref="owned_games")
+
 
 class Games_in_Store(db.Model):
     __tablename__ = 'games_in_store'

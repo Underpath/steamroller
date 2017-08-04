@@ -95,7 +95,10 @@ def pick():
     user = {}
     user['steam_id'] = g.user.steam_id
     user['nickname'] = g.user.nickname
+    print "\n\n\n" + g.user.avatar_url + "\n\n\n"
+    user['avatar_url'] = g.user.avatar_url
     s = games.Steam(user['steam_id'])
+    # KeyError: 'genres' when picking http://store.steampowered.com/api/appdetails?appids=542974
     count, game = s.pick_new()
     page = {}
     page['title'] = 'Pick game'
@@ -164,10 +167,12 @@ def create_or_login(resp):
     s = games.Steam(steam_id)
     steamdata = s.user_info()
     nickname = steamdata['personaname']
-    g.user = User.get_or_create(steam_id, nickname)
+    avatar_url = steamdata['avatar']
+    g.user = User.get_or_create(steam_id, nickname, avatar_url)
     db.session.commit()
     session['user_id'] = g.user.id
     session['nickname'] = g.user.nickname
+    session['avatar_url'] = g.user.avatar_url
     flash('You are logged in as %s' % g.user.nickname)
     params = parse_qs(urlparse(request.args.get('next')).query)
     if 'next' in params:

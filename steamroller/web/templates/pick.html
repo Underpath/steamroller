@@ -3,21 +3,28 @@
     <p>
         The following game was picked out of a total of {{ count }} games:
         </br>
-        <img src="http://media.steampowered.com/steamcommunity/public/images/apps/{{game.appid}}/{{game.img_logo_url}}.jpg">
+        <div class="game_pick">
+            <div style="color:#fff">
+                <h3><i>{{ game.name }}</i></h3>
+            </div>
+            <img src="http://media.steampowered.com/steamcommunity/public/images/apps/{{game.appid}}/{{game.img_logo_url}}.jpg">
+        </div>
         </br>
-        {{ game.appid }} - {{ game.name }}
-        </br>
-        {% if game.PCGW_url %}
-            <a href="{{ game.PCGW_url }}">PCGamingWiki</a>
-            </br>
-        {% endif %}
         {% if game.is_early_access %}
             <font color=red>WARNING!!! Game is in early acess!!!</font>
             </br>
         {% endif %}
+        <div>
+            <h4>Links</h4>
+            {% if game.PCGW_url %}
+                <ul>
+                    <li><a href="{{ game.PCGW_url }}">PCGamingWiki</a></li>
+                    <li><a href="http://store.steampowered.com/app/{{ game.appid }}">Steam Store</a></li>
+                </ul>
+            {% endif %}
         </br>
-        <input type="button" class="my_w3-btn w3-padding-12" value="Reroll!" onClick="window.location.reload()">
-        </br>
+            <input type="button" class="my_w3-btn w3-padding-12" value="Reroll!" onClick="window.location.reload()">
+        </div>
         {% if debug %}
         {{ game }}
         {% endif %}

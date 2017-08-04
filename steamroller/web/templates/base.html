@@ -47,18 +47,28 @@
                 <a class="w3-bar-item w3-button" href="/login"><b>Login</b></a>
                 <a class="w3-bar-item w3-button" href="/logout"><b>Logout</b></a>
             </nav>
-            <div class="w3-main" style="margin-left:250px;">
-                <header class="w3-container w3-theme w3-padding-64" style="padding-left:32px;background-color:#4d4d4d">
-                    <h1 class="w3-xxxlarge w3-padding-16">Hello, {{ user.nickname }}!</h1>
+            <div class="w3-main" style="margin-left:250px;position:relative;min-height: 100%">
+                <header class="w3-container w3-theme" style="padding: 8px; background-color:#4d4d4d; text-align:right;">
+                    <table style="float: right; color: #aaa; vertical-align: middle">
+                        <tr>
+                            <td>
+                                <b>{{ user.nickname }}<b>
+                            </td>
+                            <td>
+                                <img src="{{ user.avatar_url }}" style="border: solid 2px #4183d7;border-radius: 8px; margin-left: 5px; " >
+                            </td>
+                        </tr>
+                    </table>
                 </header>
 
-                <div class="w3-container w3-padding-32" style="padding-left:32px">
+                <div class="w3-container w3-padding-32" style="padding-left:32px;">
 
                     {% if page %}
                         <h2>{{ page.title }}</h2>
                     {% else %}
                         <h2>Steamroller</h2>
                     {% endif %}
+                    <hr>
                     {% with messages = get_flashed_messages() %}
                       {% if messages %}
                         <ul class=flashes>
@@ -68,12 +78,11 @@
                         </ul>
                       {% endif %}
                     {% endwith %}
-
-
                     {% block content %}
                     {% endblock %}
+                </br>
                 </div>
-            <footer class="w3-container w3-theme w3-padding-32" style="padding-left:32px;background-color:#000000;">
+            <footer class="w3-container w3-theme my_footer">
                 <p>Copyright</p>
             </footer>
             </div>
