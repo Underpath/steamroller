@@ -24,12 +24,12 @@ def login_required(f):
 @app.route('/index')
 def index():
     if g.user:
-        user = {'nickname': g.user.nickname}
+        user = get_user_details()
     else:
-        user = {'nickname': 'None'}
+        user = None
     page = {}
-    page['title'] = 'Home'
-    page['location'] = 'home'
+    page['title'] = 'About'
+    page['location'] = 'About'
     return render_template('base.html', page=page, user=user)
 
 
@@ -55,9 +55,7 @@ def old_all_games():
 @app.route('/all')
 @login_required
 def all_games():
-    user = {}
-    user['steam_id'] = g.user.steam_id
-    user['nickname'] = g.user.nickname
+    user = get_user_details()
     s = games.Steam(user['steam_id'])
     page = {}
     page['title'] = 'All Games'
@@ -70,9 +68,7 @@ def all_games():
 @app.route('/new')
 @login_required
 def new_games():
-    user = {}
-    user['steam_id'] = g.user.steam_id
-    user['nickname'] = g.user.nickname
+    user = get_user_details()
     s = games.Steam(user['steam_id'])
     page = {}
     page['title'] = 'New Games'
@@ -92,11 +88,7 @@ def pick():
         debug = True
     else:
         debug = False
-    user = {}
-    user['steam_id'] = g.user.steam_id
-    user['nickname'] = g.user.nickname
-    print "\n\n\n" + g.user.avatar_url + "\n\n\n"
-    user['avatar_url'] = g.user.avatar_url
+    user = get_user_details()
     s = games.Steam(user['steam_id'])
     # KeyError: 'genres' when picking http://store.steampowered.com/api/appdetails?appids=542974
     count, game = s.pick_new()
@@ -180,3 +172,11 @@ def create_or_login(resp):
     else:
         next_url = oid.get_next_url()
     return redirect(next_url)
+
+
+def get_user_details():
+    user = {}
+    user['steam_id'] = g.user.steam_id
+    user['nickname'] = g.user.nickname
+    user['avatar_url'] = g.user.avatar_url
+    return user

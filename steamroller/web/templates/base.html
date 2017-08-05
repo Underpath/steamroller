@@ -8,16 +8,13 @@
         <link href="{{ url_for('static', filename='layout.css') }}" rel="stylesheet" type="text/css" media="all">
     </head>
     <body>
-        {% if user %}
+
             <nav class="w3-sidebar w3-bar-block w3-collapse w3-animate-left w3-card-2" style="z-index:3;width:250px;" id="mySidebar">
-                <!--
-                <a class="w3-bar-item w3-button w3-border-bottom w3-large" href="#"><img src="https://www.w3schools.com/images/w3schools.png" style="width:80%;"></a>
-                -->
                 <a class="w3-bar-item w3-button w3-hide-large w3-large" href="javascript:void(0)" onclick="w3_close()">Close <i class="fa fa-remove"></i></a>
                 {% if page.location == 'home' %}
-                    <a class="w3-bar-item w3-button w3-dark-grey" href="/index">Home</a>
+                    <a class="w3-bar-item w3-button w3-dark-grey" href="/index">About</a>
                 {% else %}
-                    <a class="w3-bar-item w3-button" href="/index">Home</a>
+                    <a class="w3-bar-item w3-button" href="/index">About</a>
                 {% endif %}
 
                 {% if page.location == 'all' %}
@@ -37,28 +34,32 @@
                 {% else %}
                 <a class="w3-bar-item w3-button" href="/pick">Pick</a>
                 {% endif %}
-
-                {% if page.location == 'base' %}
-                <a class="w3-bar-item w3-button w3-dark-grey" href="/remove">remove</a>
-                {% else %}
-                <a class="w3-bar-item w3-button" href="/remove">remove</a>
-                {% endif %}
-
-                <a class="w3-bar-item w3-button" href="/login"><b>Login</b></a>
-                <a class="w3-bar-item w3-button" href="/logout"><b>Logout</b></a>
             </nav>
             <div class="w3-main" style="margin-left:250px;position:relative;min-height: 100%">
-                <header class="w3-container w3-theme" style="padding: 8px; background-color:#4d4d4d; text-align:right;">
-                    <table style="float: right; color: #aaa; vertical-align: middle">
-                        <tr>
-                            <td>
-                                <b>{{ user.nickname }}<b>
-                            </td>
-                            <td>
-                                <img src="{{ user.avatar_url }}" style="border: solid 2px #4183d7;border-radius: 8px; margin-left: 5px; " >
-                            </td>
-                        </tr>
-                    </table>
+                <header class="w3-container w3-theme" style="padding: 0px; background-color:#4d4d4d; text-align:right;">
+                {% if user %}
+                <div class="dropdown">
+                    <button class="dropdown_button">
+                        <table style="color: inherit; vertical-align: middle">
+                            <tr>
+                                <td>
+                                    <b>{{ user.nickname }}<b>
+                                </td>
+                                <td>
+                                    <img src="{{ user.avatar_url }}" style="border: solid 2px #4183d7;border-radius: 8px; margin-left: 5px; " >
+                                </td>
+                            </tr>
+                        </table>
+                    </button>
+                  <div class="dropdown-content">
+                    <a href="/logout"><b>Logout</b></a>
+                  </div>
+                </div>
+                {% else %}
+                <a href="/login">
+                    <img src="http://cdn.steamcommunity.com/public/images/signinthroughsteam/sits_small.png" style="padding: 10px" >
+                </a>
+                {% endif %}
                 </header>
 
                 <div class="w3-container w3-padding-32" style="padding-left:32px;">
@@ -86,6 +87,6 @@
                 <p>Copyright</p>
             </footer>
             </div>
-        {% endif %}
+
     </body>
 </html>
