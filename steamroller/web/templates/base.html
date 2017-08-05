@@ -11,54 +11,35 @@
 
             <nav class="w3-sidebar w3-bar-block w3-collapse w3-animate-left w3-card-2" style="z-index:3;width:250px;" id="mySidebar">
                 <a class="w3-bar-item w3-button w3-hide-large w3-large" href="javascript:void(0)" onclick="w3_close()">Close <i class="fa fa-remove"></i></a>
-                {% if page.location == 'home' %}
-                    <a class="w3-bar-item w3-button w3-dark-grey" href="/index">About</a>
-                {% else %}
-                    <a class="w3-bar-item w3-button" href="/index">About</a>
-                {% endif %}
-
-                {% if page.location == 'all' %}
-                <a class="w3-bar-item w3-button w3-dark-grey" href="/all">All</a>
-                {% else %}
-                <a class="w3-bar-item w3-button" href="/all">All</a>
-                {% endif %}
-
-                {% if page.location == 'new' %}
-                <a class="w3-bar-item w3-button w3-dark-grey" href="/new">New</a>
-                {% else %}
-                <a class="w3-bar-item w3-button" href="/new">New</a>
-                {% endif %}
-
-                {% if page.location == 'pick' %}
-                <a class="w3-bar-item w3-button w3-dark-grey" href="/pick">Pick</a>
-                {% else %}
-                <a class="w3-bar-item w3-button" href="/pick">Pick</a>
-                {% endif %}
+                <a class="w3-bar-item w3-button{% if page.location == 'about' %} w3-dark-grey{% endif %}" href="/index">About</a>
+                <a class="w3-bar-item w3-button{% if page.location == 'all' %} w3-dark-grey{% endif %}" href="/all">All my games</a>
+                <a class="w3-bar-item w3-button{% if page.location == 'new' %} w3-dark-grey{% endif %}" href="/new">My new games</a>
+                <a class="w3-bar-item w3-button{% if page.location == 'pick' %} w3-dark-grey{% endif %}" href="/pick">Pick game</a>
             </nav>
             <div class="w3-main" style="margin-left:250px;position:relative;min-height: 100%">
                 <header class="w3-container w3-theme" style="padding: 0px; background-color:#4d4d4d; text-align:right;">
                 {% if user %}
-                <div class="dropdown">
-                    <button class="dropdown_button">
-                        <table style="color: inherit; vertical-align: middle">
-                            <tr>
-                                <td>
-                                    <b>{{ user.nickname }}<b>
-                                </td>
-                                <td>
-                                    <img src="{{ user.avatar_url }}" style="border: solid 2px #4183d7;border-radius: 8px; margin-left: 5px; " >
-                                </td>
-                            </tr>
-                        </table>
-                    </button>
-                  <div class="dropdown-content">
-                    <a href="/logout"><b>Logout</b></a>
-                  </div>
-                </div>
+                    <div class="dropdown">
+                        <button class="dropdown_button">
+                            <table style="color: inherit; vertical-align: middle">
+                                <tr>
+                                    <td>
+                                        <b>{{ user.nickname }}<b>
+                                    </td>
+                                    <td>
+                                        <img src="{{ user.avatar_url }}" style="border: solid 2px #4183d7;border-radius: 8px; margin-left: 5px; " >
+                                    </td>
+                                </tr>
+                            </table>
+                        </button>
+                      <div class="dropdown-content">
+                        <a href="/logout"><b>Logout</b></a>
+                      </div>
+                    </div>
                 {% else %}
-                <a href="/login">
-                    <img src="http://cdn.steamcommunity.com/public/images/signinthroughsteam/sits_small.png" style="padding: 10px" >
-                </a>
+                    <a href="/login">
+                        <img src="http://cdn.steamcommunity.com/public/images/signinthroughsteam/sits_small.png" style="padding: 15px" >
+                    </a>
                 {% endif %}
                 </header>
 
@@ -70,21 +51,24 @@
                         <h2>Steamroller</h2>
                     {% endif %}
                     <hr>
-                    {% with messages = get_flashed_messages() %}
-                      {% if messages %}
-                        <ul class=flashes>
-                        {% for message in messages %}
-                          <li>{{ message }}</li>
-                        {% endfor %}
-                        </ul>
-                      {% endif %}
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                    <div class="alert{% if category == 'red' %} alert_red{% elif category == 'green' %} alert_green{% else %} alert_blue{% endif %}">
+                                        {{ message }}
+                                        <div style="float: right; width 10px; padding: 0;">
+                                            <span id="close" onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode); return false;" style="padding-left: 10px; font-weight: normal; cursor: pointer">&#10006;</span>
+                                        </div>
+                                    </div>
+                            {% endfor %}
+                        {% endif %}
                     {% endwith %}
                     {% block content %}
                     {% endblock %}
                 </br>
                 </div>
             <footer class="w3-container w3-theme my_footer">
-                <p>Copyright</p>
+                <p><strong>Steamroller!</strong> - Powered by <a href="http://store.steampowered.com/"><img src="http://store.edgecast.steamstatic.com/public/shared/images/header/globalheader_logo.png" height=20 style="padding-left: 8"></a></p>
             </footer>
             </div>
 

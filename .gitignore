@@ -4,3 +4,4 @@ config.cfg
 *.db
 *.sql
 _test_*
+steamroller/img/

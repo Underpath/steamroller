@@ -14,7 +14,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if g.user is None:
-            flash('You are not logged in')
+            flash('You should log in before trying that', 'red')
             return redirect(url_for('index', next=request.url))
         return f(*args, **kwargs)
     return decorated_function
@@ -29,7 +29,7 @@ def index():
         user = None
     page = {}
     page['title'] = 'About'
-    page['location'] = 'About'
+    page['location'] = 'about'
     return render_template('base.html', page=page, user=user)
 
 
@@ -148,7 +148,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
-    flash('You have been logged out')
+    flash('You have been logged out', 'green')
     return redirect(url_for('index'))
 
 
@@ -165,7 +165,7 @@ def create_or_login(resp):
     session['user_id'] = g.user.id
     session['nickname'] = g.user.nickname
     session['avatar_url'] = g.user.avatar_url
-    flash('You are logged in as %s' % g.user.nickname)
+    flash('You are logged in as %s' % g.user.nickname, 'green')
     params = parse_qs(urlparse(request.args.get('next')).query)
     if 'next' in params:
         next_url = urlparse(params['next'][0]).path

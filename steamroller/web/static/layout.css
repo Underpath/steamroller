@@ -165,8 +165,30 @@ ul.w3-ul{list-style-type:none;padding:0;margin:0}ul.w3-ul li{padding:8px 16px;bo
     background-color: #ccc;
     color: #4A4A4A;
 }
-.dropdown-content a:hover {background-color: #f1f1f1}
-
+.dropdown-content a:hover {
+    background-color: #f1f1f1
+}
+.alert {
+    font-weight: bold;
+    width: 60%;
+    border-radius: 1em;
+    padding: .75em 1em;
+}
+.alert_red {
+    background-color: #371616;
+    border: solid #6d2c2c;
+    color: #e3b6b6;
+}
+.alert_green {
+    background-color: #16270f;
+    border: solid #3e6e2b;
+    color: #89C38A;
+}
+.alert_blue {
+    background-color: #081C26;
+    border: solid #1b5d7e;
+    color: #96cde9;
+}
 .w3-modal{z-index:3;display:none;padding-top:100px;position:fixed;left:0;top:0;width:100%;height:100%;overflow:auto;background-color:rgb(0,0,0);background-color:rgba(0,0,0,0.4)}
 .w3-modal-content{margin:auto;background-color:#fff;position:relative;padding:0;outline:0;width:600px}.w3-closebtn{text-decoration:none;float:right;font-size:24px;font-weight:bold;color:inherit}
 .w3-closebtn:hover,.w3-closebtn:focus{color:#000;text-decoration:none;cursor:pointer}
