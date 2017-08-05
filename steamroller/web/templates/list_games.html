@@ -1,23 +1,42 @@
 {% extends "base.html" %}
 {% block content %}
     {% for game in games %}
-        {% if game.is_new %}
             <div id="middle"><p>
                 <form action = "/change_game_preference" method = "post">
-                    <font color=green>✔</font>{{ game.name }}
-                    <input type="text" name="game_id" value="{{ game.id }}" readonly hidden=True/>
-                    <input type="submit" class="my_w3-btn w3-padding-12" name="operation" value="remove" />
+
+                    {% if game.is_new %}
+                        {% set class = 'new_game' %}
+                        {% set type = 'New game' %}
+                        {% set operation = 'Remove' %}
+                    {% else %}
+                        {% set class = 'old_game' %}
+                        {% set type = 'Old game' %}
+                        {% set operation = 'Add' %}
+                    {% endif %}
+
+                    <div class="{{ class }}">
+                        <div style="float: left; height: 100%; border-right: inherit;">
+                            <img src="http://media.steampowered.com/steamcommunity/public/images/apps/{{game.appid}}/{{game.img_logo_url}}.jpg" style="max-height: 100%;">
+                        </div>
+                        <div style="float: left; height: 100%; text-align: center; padding:10px;">
+                            {{ game.name }}
+                        </div>
+
+                        <div style="float: right; height: 100%; border-left: inherit">
+                            <input type="text" name="game_id" value="{{ game.id }}" readonly hidden=True/>
+                            <input type="text" name="game_name" value="{{ game.name }}" readonly hidden=True/>
+                            <input type="submit" class="my_w3-btn" name="operation" value="{{ operation }}" style="height: 100%; width: 110px;" />
+                        </div>
+                        <div style="float: right; height: 100%; border-left: inherit; text-align: center; padding:10px; width: 110px;">
+                            {{ type }}
+                        </div>
+                        {% if game.is_early_access %}
+                            <div style="float: right; height: 100%; border-left: inherit; text-align: center; padding:10px; color: #f89406">
+                                <strong>Early Access</strong>
+                            </div>
+                        {% endif %}
+                    </div>
                 </form>
             </p></div>
-        {% else %}
-            <div id="middle"><p>
-                <form action = "/change_game_preference" method = "post">
-                    <font color=red>✘</font>{{ game.name }}
-                    <input type="text" name="game_id" value="{{ game.id }}" readonly hidden=True/>
-                    <input type="submit" class="my_w3-btn w3-padding-12" name="operation" value="add" />
-                </form>
-            </p></div>
-        {% endif %}
-        <!-- ✔ ✘ -->
     {% endfor %}
 {% endblock %}

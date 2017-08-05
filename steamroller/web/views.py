@@ -103,18 +103,21 @@ def pick():
 @login_required
 def change_game_preference():
     """
-    Takes a game ID through a post request and removes it from the elegible
-    games pool.
+    Takes a game ID through a post request and removes/adds it from the
+    elegible games pool.
     """
-    #game_id = request.args.post('game_id', '', int)
-    #operation = request.args.post('operation', '', str)
     game_id = request.form['game_id']
+    game_name = request.form['game_name']
     operation = request.form['operation']
     print game_id
     print operation
     if not operation or not game_id:
         print "Not enough parameters."
         return "ERROR"
+    if operation == 'Add':
+        flash('Added "' + game_name + '" to new games.', 'blue')
+    elif operation == 'Remove':
+        flash('Removed "' + game_name + '" from new games.', 'blue')
     games.change_game_preference(g.user.steam_id, game_id, operation)
     return redirect(request.referrer)
 

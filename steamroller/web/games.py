@@ -43,6 +43,8 @@ class Steam():
 
         games_query = models.Owned_Games.query.filter_by(user=user).all()
         games = result_to_dict(games_query)
+        for game in games:
+            game['appid'] = get_app_id(game['id'])
         return games
 
     def new_games(self):
@@ -60,7 +62,11 @@ class Steam():
                                          or_(models.Owned_Games.include == True,
                                              models.Owned_Games.is_new == True))
         games_query = games_query.all()
-        return result_to_dict(games_query)
+        new_games = result_to_dict(games_query)
+
+        for game in new_games:
+            game['appid'] = get_app_id(game['id'])
+        return new_games
 
     def pick_new(self):
         """
@@ -101,7 +107,7 @@ def steam_sort(games):
 
 def is_early_access(game_id):
     """
-    Queries the steam API for the game genres and returns true if 'Early
+    Queries the steam API for the game's genres and returns true if 'Early
     Access' is among them.
     """
 
@@ -298,13 +304,14 @@ def change_game_preference(steam_id, game_id, operation):
     if not owned_game_obj:
         print "Seems user " + str(user.id) + "does not own game " + str(game_id)
 
-    if operation == 'remove' and owned_game_obj.exclude is False:
+    if operation == 'Remove' and owned_game_obj.exclude is False:
         owned_game_obj.exclude = True
         owned_game_obj.include = False
         print "Excluding game " + str(game_id) + " for user " + str(user.id)
-    elif operation == 'add' and owned_game_obj.include is False:
+    elif operation == 'Add' and owned_game_obj.include is False:
         owned_game_obj.exclude = False
         owned_game_obj.include = True
+        is_early_access(game_id)
         print "Including game " + str(game_id) + " for user " + str(user.id)
     else:
         print "Game already excluded."
