@@ -9,8 +9,8 @@
                         {% set type = 'New game' %}
                         {% set operation = 'Remove' %}
                     {% else %}
-                        {% set class = 'old_game' %}
-                        {% set type = 'Old game' %}
+                        {% set class = 'played_game' %}
+                        {% set type = 'Played game' %}
                         {% set operation = 'Add' %}
                     {% endif %}
 
@@ -25,9 +25,9 @@
                         <div style="float: right; height: 100%; border-left: inherit">
                             <input type="text" name="game_id" value="{{ game.id }}" readonly hidden=True/>
                             <input type="text" name="game_name" value="{{ game.name }}" readonly hidden=True/>
-                            <input type="submit" class="my_w3-btn" name="operation" value="{{ operation }}" style="height: 100%; width: 110px;" />
+                            <input type="submit" class="my_w3-btn" name="operation" value="{{ operation }}" style="height: 100%; width: 120px;" />
                         </div>
-                        <div style="float: right; height: 100%; border-left: inherit; text-align: center; padding:10px; width: 110px;">
+                        <div style="float: right; height: 100%; border-left: inherit; text-align: center; padding:10px; width: 120px;">
                             {{ type }}
                         </div>
                         {% if game.is_early_access %}
