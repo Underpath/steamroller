@@ -39,7 +39,9 @@ class Steam():
         """
 
         user = self.user
-        trigger_update(user)
+        update = trigger_update(user)
+        if update == 2:
+            return False
 
         games_query = models.Owned_Games.query.filter_by(user=user).all()
         games = result_to_dict(games_query)
@@ -54,7 +56,11 @@ class Steam():
         """
 
         user = self.user
-        trigger_update(user)
+
+        update = trigger_update(user)
+        if update == 2:
+            return False
+
         games_query = models.Owned_Games.query
 
         games_query = games_query.filter(models.Owned_Games.user == user,
@@ -74,6 +80,8 @@ class Steam():
         """
 
         games = self.new_games()
+        if not games:
+            return False
         count, game = pick_game(games)
         game['PCGW_url'] = get_pcgw_url(game['id'])
         game['appid'] = get_app_id(game['id'])
@@ -183,10 +191,12 @@ def get_pcgw_url(game_id):
     params = {'action': 'askargs', 'format': 'json',
               'conditions': 'Steam AppID::' + str(appid)}
     api_url = config.get_option('PCGW_API')
-    url = make_request_to_api(api_url, params)['query']
-    if url['results']:
-        url = url['results'].values()[0]['fullurl']
-        return url
+    url = make_request_to_api(api_url, params)
+    if url:
+        url = url['query']
+        if url['results']:
+            url = url['results'].values()[0]['fullurl']
+            return url
     return False
 
 
@@ -217,7 +227,10 @@ def trigger_update(user):
     """
     Takes a user object from the models and returns whether games associated
     with it need to be updated based on the time threshold defined in the
-    configuration.
+    configuration. Responses are as follows:
+        0: Games were updated.
+        1: Games were fetched from the local DB.
+        2: Error making API request to update the games.
     """
 
     if user.games_updated:
@@ -225,10 +238,11 @@ def trigger_update(user):
         threshold = int(config.get_option('USER_REFRESH_TIME'))
         if time_since_update.total_seconds() < threshold:
             print "Fetching games from local DB."
-            return False
+            return 1
     print "Updating games for user."
-    update_games_for_user(user)
-    return True
+    if not update_games_for_user(user):
+        return 2
+    return 0
 
 
 def update_games_for_user(user):
@@ -242,7 +256,10 @@ def update_games_for_user(user):
               'steamid': user.steam_id,
               'include_appinfo': 1, 'format': 'json'}
     games = make_request_to_api(config.get_option('OWNED_GAMES_API'),
-                                params)['response']['games']
+                                params)
+    if not games:
+        return False
+    games = games['response']['games']
     # {u'playtime_forever': 12, u'name': u'Zombie Shooter',
     # u'img_logo_url': u'2e4082032b2a7e8b1782fc7515fcf5c4056d5050',
     # u'appid': 33130,

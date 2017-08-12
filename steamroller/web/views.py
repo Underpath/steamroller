@@ -61,8 +61,11 @@ def all_games():
     page['title'] = 'All Games'
     page['location'] = 'all'
     all_games = s.get_all_games()
-    return render_template('list_games.html', page=page, user=user,
-                           games=all_games)
+    if all_games:
+        return render_template('list_games.html', page=page, user=user,
+                               games=all_games)
+    else:
+        return render_template('error.html', page=page, user=user)
 
 
 @app.route('/new')
@@ -75,9 +78,13 @@ def new_games():
     page['location'] = 'new'
 
     s = games.Steam(user['steam_id'])
+    my_new_games = s.new_games()
 
-    return render_template('list_games.html', page=page, user=user,
-                           games=s.new_games())
+    if my_new_games:
+        return render_template('list_games.html', page=page, user=user,
+                               games=my_new_games)
+    else:
+        return render_template('error.html', page=page, user=user)
 
 
 @app.route('/pick')
@@ -90,13 +97,16 @@ def pick():
         debug = False
     user = get_user_details()
     s = games.Steam(user['steam_id'])
-    # KeyError: 'genres' when picking http://store.steampowered.com/api/appdetails?appids=542974
-    count, game = s.pick_new()
     page = {}
     page['title'] = 'Pick game'
     page['location'] = 'pick'
-    return render_template('pick.html', page=page, user=user, game=game,
-                           count=count, debug=debug)
+    picks = s.pick_new()
+    if picks:
+        count, game = picks
+        return render_template('pick.html', page=page, user=user, game=game,
+                               count=count, debug=debug)
+    else:
+        return render_template('error.html', page=page, user=user)
 
 
 @app.route('/change_game_preference', methods=['POST'])

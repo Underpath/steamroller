@@ -15,9 +15,11 @@
                     {% endif %}
 
                     <div class="{{ class }}">
-                        <div style="float: left; height: 100%; border-right: inherit;">
-                            <img src="http://media.steampowered.com/steamcommunity/public/images/apps/{{game.appid}}/{{game.img_logo_url}}.jpg" style="max-height: 100%;">
-                        </div>
+                        {% if game.img_logo_url != "" %}
+                            <div style="float: left; height: 100%; border-right: inherit;">
+                                <img src="http://media.steampowered.com/steamcommunity/public/images/apps/{{game.appid}}/{{game.img_logo_url}}.jpg" style="max-height: 100%;">
+                            </div>
+                        {% endif %}
                         <div style="float: left; height: 100%; text-align: center; padding:10px;">
                             {{ game.name }}
                         </div>
