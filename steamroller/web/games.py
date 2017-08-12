@@ -131,6 +131,9 @@ def is_early_access(game_id):
             if app_data[key]['success'] is False:
                 print "Request to API returned unsuccesful."
                 return False
+            if 'genres' not in app_data[str(appid)]['data']:
+                return False
+
             genres = app_data[str(appid)]['data']['genres']
             game.last_checked = datetime.now()
             for genre in genres:
@@ -156,6 +159,7 @@ def pick_game(games):
 
     count = len(games)
     pick = SystemRandom().randrange(count)
+    print "Game picked:"
     print games[pick]
     games[pick]['is_early_access'] = is_early_access(games[pick]['id'])
     return count, games[pick]
@@ -192,9 +196,11 @@ def make_request_to_api(base_url, params=None):
     return the response as dictionary.
     """
 
+    print "Making request to: " + base_url
+    print "\tParams: " + str(params)
     try:
         r = requests.get(base_url, params=params)
-        print "Making request to: " + r.url
+        print "Request made to: " + r.url
     except:
         print 'There was an error trying to reach the website.'
         return False
