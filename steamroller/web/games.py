@@ -184,7 +184,7 @@ def get_app_id(game_id):
 
 def get_pcgw_url(game_id):
     """
-    Returns the URL for the game in PCGamingWiki or false if not found.
+    Returns the URL for the game in PCGamingWiki or False if not found.
     """
     appid = get_app_id(game_id)
 
@@ -203,7 +203,7 @@ def get_pcgw_url(game_id):
 def make_request_to_api(base_url, params=None):
     """
     Generic function to make HTTP requests, read the response as JSON and
-    return the response as dictionary.
+    return the response as dictionary. If the request fails returns False.
     """
 
     print "Making request to: " + base_url
@@ -229,7 +229,7 @@ def trigger_update(user):
     with it need to be updated based on the time threshold defined in the
     configuration. Responses are as follows:
         0: Games were updated.
-        1: Games were fetched from the local DB.
+        1: Games are to be fetched from the local DB.
         2: Error making API request to update the games.
     """
 
@@ -238,9 +238,11 @@ def trigger_update(user):
         threshold = int(config.get_option('USER_REFRESH_TIME'))
         if time_since_update.total_seconds() < threshold:
             print "Fetching games from local DB."
-            return 1
+            #return 1
     print "Updating games for user."
+
     if not update_games_for_user(user):
+        print 'not update_games_for_user'
         return 2
     return 0
 
@@ -299,6 +301,7 @@ def update_games_for_user(user):
                                                   is_new=is_new))
     db.session.add_all(records)
     db.session.commit()
+    return True
 
 
 def result_to_dict(games_query):

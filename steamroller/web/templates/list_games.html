@@ -1,5 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
+    {% if pagination %}
+        {% if pagination.section > 1 %}
+            <a href="/all2/{{ pagination.section - 1 }}">Previous</a>
+        {% else %}
+            Previous
+        {% endif %}
+        Page {{ pagination.section }} of {{ pagination.section_count }}. {{ pagination.game_count }} total games.
+        {% if pagination.section < pagination.section_count %}
+            <a href="/all2/{{ pagination.section + 1 }}">Next</a>
+        {% else %}
+            Next
+        {% endif %}
+        </br>
+        {% if pagination.section_count > 1 and pagination.section_count <= 5 %}
+            {% for link in pagination.links %}
+                <a href="/all2/{{ link }}">{{ link }}</a>
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+
     {% for game in games %}
             <div id="middle"><p>
                 <form action = "/change_game_preference" method = "post">

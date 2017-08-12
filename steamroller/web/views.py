@@ -1,10 +1,9 @@
 from steamroller.web import app, oid, db
-from steamroller.lib import config
 from flask import render_template, request, flash, redirect, g, session, \
-    url_for
+    url_for, abort
 from functools import wraps
-from steamroller.lib import games as old_games
 import games
+import util
 import re
 from steamroller.web.models import User
 from urlparse import urlparse, parse_qs
@@ -33,25 +32,6 @@ def index():
     return render_template('base.html', page=page, user=user)
 
 
-@app.route('/config')
-def web_config():
-    return config.CONFIG_FILE
-
-
-@app.route('/old_all')
-@login_required
-def old_all_games():
-    user = {}
-    user['steam_id'] = g.user.steam_id
-    user['nickname'] = g.user.nickname
-    s = old_games.steam(user['steam_id'])
-    page = {}
-    page['title'] = 'All Games'
-    page['location'] = 'all'
-    return render_template('list_games.html', page=page, user=user,
-                           games=s.games())
-
-
 @app.route('/all')
 @login_required
 def all_games():
@@ -60,12 +40,33 @@ def all_games():
     page = {}
     page['title'] = 'All Games'
     page['location'] = 'all'
-    all_games = s.get_all_games()
-    if all_games:
+    all_my_games = s.get_all_games()
+    if all_my_games:
         return render_template('list_games.html', page=page, user=user,
-                               games=all_games)
+                               games=all_my_games)
     else:
         return render_template('error.html', page=page, user=user)
+
+
+@app.route('/all2/', defaults={'section': 1})
+@app.route('/all2/<int:section>')
+@login_required
+def all_games2(section):
+    user = get_user_details()
+    s = games.Steam(user['steam_id'])
+    my_page = {}
+    my_page['title'] = 'All Games'
+    my_page['location'] = 'all2'
+    all_my_games = s.get_all_games()
+    if all_my_games:
+        pagination = util.paginate(section, all_my_games)
+        if pagination and section > 0:
+            return render_template('list_games2.html', page=my_page, user=user,
+                                pagination=pagination)
+        else:
+            abort(404)
+    else:
+        return render_template('error.html', page=my_page, user=user)
 
 
 @app.route('/new')
@@ -186,6 +187,10 @@ def create_or_login(resp):
         next_url = oid.get_next_url()
     return redirect(next_url)
 
+@app.errorhandler(404)
+def page_not_found(e):
+    #return render_template('404.html'), 404
+    return "error 404"
 
 def get_user_details():
     user = {}
