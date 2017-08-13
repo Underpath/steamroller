@@ -26,66 +26,38 @@ def index():
         user = get_user_details()
     else:
         user = None
-    page = {}
-    page['title'] = 'About'
-    page['location'] = 'about'
-    return render_template('base.html', page=page, user=user)
+    my_page = {}
+    my_page['title'] = 'About'
+    my_page['location'] = 'about'
+    return render_template('base.html', my_page=my_page, user=user)
 
 
-@app.route('/all')
+@app.route('/all/', defaults={'section': 1})
+@app.route('/all/<int:section>')
 @login_required
-def all_games():
-    user = get_user_details()
-    s = games.Steam(user['steam_id'])
-    page = {}
-    page['title'] = 'All Games'
-    page['location'] = 'all'
-    all_my_games = s.get_all_games()
-    if all_my_games:
-        return render_template('list_games.html', page=page, user=user,
-                               games=all_my_games)
-    else:
-        return render_template('error.html', page=page, user=user)
-
-
-@app.route('/all2/', defaults={'section': 1})
-@app.route('/all2/<int:section>')
-@login_required
-def all_games2(section):
+def all_games(section):
     user = get_user_details()
     s = games.Steam(user['steam_id'])
     my_page = {}
     my_page['title'] = 'All Games'
-    my_page['location'] = 'all2'
+    my_page['location'] = 'all'
     all_my_games = s.get_all_games()
-    if all_my_games:
-        pagination = util.paginate(section, all_my_games)
-        if pagination and section > 0:
-            return render_template('list_games2.html', page=my_page, user=user,
-                                pagination=pagination)
-        else:
-            abort(404)
-    else:
-        return render_template('error.html', page=my_page, user=user)
+    return generate_list_view(all_my_games, user, my_page, section)
 
 
-@app.route('/new')
+@app.route('/new/', defaults={'section': 1})
+@app.route('/new/<int:section>')
 @login_required
-def new_games():
+def new_games(section):
     user = get_user_details()
     s = games.Steam(user['steam_id'])
-    page = {}
-    page['title'] = 'New Games'
-    page['location'] = 'new'
+    my_page = {}
+    my_page['title'] = 'New Games'
+    my_page['location'] = 'new'
 
     s = games.Steam(user['steam_id'])
     my_new_games = s.new_games()
-
-    if my_new_games:
-        return render_template('list_games.html', page=page, user=user,
-                               games=my_new_games)
-    else:
-        return render_template('error.html', page=page, user=user)
+    return generate_list_view(my_new_games, user, my_page, section)
 
 
 @app.route('/pick')
@@ -98,16 +70,16 @@ def pick():
         debug = False
     user = get_user_details()
     s = games.Steam(user['steam_id'])
-    page = {}
-    page['title'] = 'Pick game'
-    page['location'] = 'pick'
+    my_page = {}
+    my_page['title'] = 'Pick game'
+    my_page['location'] = 'pick'
     picks = s.pick_new()
     if picks:
         count, game = picks
-        return render_template('pick.html', page=page, user=user, game=game,
+        return render_template('pick.html', my_page=my_page, user=user, game=game,
                                count=count, debug=debug)
     else:
-        return render_template('error.html', page=page, user=user)
+        return render_template('error.html', my_page=my_page, user=user)
 
 
 @app.route('/change_game_preference', methods=['POST'])
@@ -131,17 +103,6 @@ def change_game_preference():
         flash('Removed "' + game_name + '" from new games.', 'blue')
     games.change_game_preference(g.user.steam_id, game_id, operation)
     return redirect(request.referrer)
-
-
-@app.route('/base')
-def base():
-    user = {}
-    user['steam_id'] = 3
-    user['nickname'] = 'god'
-    page = {}
-    page['title'] = 'Base'
-    page['location'] = 'base'
-    return render_template('base.html', page=page, user=user)
 
 
 @app.before_request
@@ -187,10 +148,12 @@ def create_or_login(resp):
         next_url = oid.get_next_url()
     return redirect(next_url)
 
+
 @app.errorhandler(404)
 def page_not_found(e):
     #return render_template('404.html'), 404
     return "error 404"
+
 
 def get_user_details():
     user = {}
@@ -198,3 +161,20 @@ def get_user_details():
     user['nickname'] = g.user.nickname
     user['avatar_url'] = g.user.avatar_url
     return user
+
+
+def generate_list_view(my_games, user, page_details, section):
+    """
+    Renders the list of the provided games after pagination or an error if
+    something goes wrong.
+    """
+
+    if games:
+        pagination = util.paginate(section, my_games)
+        if pagination and section > 0:
+            return render_template('list_games.html', my_page=page_details,
+                                   user=user, pagination=pagination)
+        else:
+            abort(404)
+    else:
+        return render_template('error.html', my_page=page_details, user=user)

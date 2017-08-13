@@ -1,7 +1,7 @@
 <html>
     <head>
-        {% if page %}
-            <title>{{ page.title }} - Steamroller</title>
+        {% if my_page %}
+            <title>{{ my_page.title }} - Steamroller</title>
         {% else %}
             <title>Steamroller</title>
         {% endif %}
@@ -11,12 +11,11 @@
 
             <nav class="w3-sidebar w3-bar-block w3-collapse w3-animate-left w3-card-2" style="z-index:3;width:250px;" id="mySidebar">
                 <a class="w3-bar-item w3-button w3-hide-large w3-large" href="javascript:void(0)" onclick="w3_close()">Close <i class="fa fa-remove"></i></a>
-                <a class="w3-bar-item w3-button{% if page.location == 'about' %} w3-dark-grey{% endif %}" href="/index">About</a>
+                <a class="w3-bar-item w3-button{% if my_page.location == 'about' %} w3-dark-grey{% endif %}" href="/index">About</a>
                 {% if user %}
-                    <a class="w3-bar-item w3-button{% if page.location == 'all' %} w3-dark-grey{% endif %}" href="/all">All my games</a>
-                    <a class="w3-bar-item w3-button{% if page.location == 'all2' %} w3-dark-grey{% endif %}" href="/all2">All my games2</a>
-                    <a class="w3-bar-item w3-button{% if page.location == 'new' %} w3-dark-grey{% endif %}" href="/new">My new games</a>
-                    <a class="w3-bar-item w3-button{% if page.location == 'pick' %} w3-dark-grey{% endif %}" href="/pick">Pick game</a>
+                    <a class="w3-bar-item w3-button{% if my_page.location == 'all' %} w3-dark-grey{% endif %}" href="/all">All my games</a>
+                    <a class="w3-bar-item w3-button{% if my_page.location == 'new' %} w3-dark-grey{% endif %}" href="/new">My new games</a>
+                    <a class="w3-bar-item w3-button{% if my_page.location == 'pick' %} w3-dark-grey{% endif %}" href="/pick">Pick game</a>
                 {% endif %}
             </nav>
             <div class="w3-main" style="margin-left:250px;position:relative;min-height: 100%">
@@ -48,8 +47,8 @@
 
                 <div class="w3-container w3-padding-32" style="padding-left:32px;">
 
-                    {% if page %}
-                        <h2>{{ page.title }}</h2>
+                    {% if my_page %}
+                        <h2>{{ my_page.title }}</h2>
                     {% else %}
                         <h2>Steamroller</h2>
                     {% endif %}

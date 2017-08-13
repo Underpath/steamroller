@@ -1,26 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
-    {% if pagination %}
+    <div id="pagination" style="text-align: center; margin: 0 auto; padding-bottom: 10px;">
+        <div style="padding: 15">
+            Page {{ pagination.section }} of {{ pagination.section_count }}, {{ pagination.game_count }} total games.
+        </div>
         {% if pagination.section > 1 %}
-            <a href="/all2/{{ pagination.section - 1 }}">Previous</a>
+            <a href="/all/1" title="First page" class="pagination_links my_w3-btn"><<</a>
+            <a href="/all/{{ pagination.section - 1 }}"title="Previous page" class="pagination_links my_w3-btn" ><</a>
         {% else %}
-            Previous
+            <a href="#"title="Previous page" class="pagination_links my_w3-btn" ><<</a>
+            <a href="#"title="Previous page" class="pagination_links my_w3-btn" ><</a>
         {% endif %}
-        Page {{ pagination.section }} of {{ pagination.section_count }}. {{ pagination.game_count }} total games.
+        {% for link in pagination.links %}
+            <a href="/all/{{ link }}" title="Page {{ link }}" class="pagination_links my_w3-btn">{{ link }}</a>
+        {% endfor %}
         {% if pagination.section < pagination.section_count %}
-            <a href="/all2/{{ pagination.section + 1 }}">Next</a>
+            <a href="/all/{{ pagination.section + 1 }}" title="Next page" class="pagination_links my_w3-btn">></a>
+            <a href="/all/{{ pagination.section_count }}" title="Last page" class="pagination_links my_w3-btn">>></a>
         {% else %}
-            Next
+            <a href="#"title="Previous page" class="pagination_links my_w3-btn" >></a>
+            <a href="#"title="Previous page" class="pagination_links my_w3-btn" >>></a>
         {% endif %}
-        </br>
-        {% if pagination.section_count > 1 and pagination.section_count <= 5 %}
-            {% for link in pagination.links %}
-                <a href="/all2/{{ link }}">{{ link }}</a>
-            {% endfor %}
-        {% endif %}
-    {% endif %}
-
-    {% for game in games %}
+    </div>
+    {% for game in pagination.games %}
             <div id="middle"><p>
                 <form action = "/change_game_preference" method = "post">
 

@@ -238,7 +238,7 @@ def trigger_update(user):
         threshold = int(config.get_option('USER_REFRESH_TIME'))
         if time_since_update.total_seconds() < threshold:
             print "Fetching games from local DB."
-            #return 1
+            return 1
     print "Updating games for user."
 
     if not update_games_for_user(user):
