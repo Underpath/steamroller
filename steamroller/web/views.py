@@ -151,8 +151,11 @@ def create_or_login(resp):
 
 @app.errorhandler(404)
 def page_not_found(e):
-    #return render_template('404.html'), 404
-    return "error 404"
+    my_page = {}
+    my_page['title'] = '404 - Error'
+    my_page['location'] = '404'
+    user = get_user_details()
+    return render_template('404.html', my_page=my_page, user=user), 404
 
 
 def get_user_details():
@@ -169,7 +172,7 @@ def generate_list_view(my_games, user, page_details, section):
     something goes wrong.
     """
 
-    if games:
+    if my_games:
         pagination = util.paginate(section, my_games)
         if pagination and section > 0:
             return render_template('list_games.html', my_page=page_details,
