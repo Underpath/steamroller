@@ -42,6 +42,8 @@ def all_games(section):
     my_page['title'] = 'All Games'
     my_page['location'] = 'all'
     all_my_games = s.get_all_games()
+    app.logger.debug('Listing games in section ' + str(section) +
+                     ' for user "' + user['steam_id'] + '" from all.')
     return generate_list_view(all_my_games, user, my_page, section)
 
 
@@ -54,9 +56,10 @@ def new_games(section):
     my_page = {}
     my_page['title'] = 'New Games'
     my_page['location'] = 'new'
-
     s = games.Steam(user['steam_id'])
     my_new_games = s.new_games()
+    app.logger.debug('Listing games in section ' + str(section) +
+                     ' for user "' + user['steam_id'] + '" from new.')
     return generate_list_view(my_new_games, user, my_page, section)
 
 
@@ -76,6 +79,9 @@ def pick():
     picks = s.pick_new()
     if picks:
         count, game = picks
+        app.logger.debug('Picked game {id: ' + str(game['id']) +
+                         ', steam_appid: ' + str(game['appid']) +
+                         '} for user "' + user['steam_id'] + '".')
         return render_template('pick.html', my_page=my_page, user=user, game=game,
                                count=count, debug=debug)
     else:
@@ -92,16 +98,23 @@ def change_game_preference():
     game_id = request.form['game_id']
     game_name = request.form['game_name']
     operation = request.form['operation']
+    user = get_user_details()
+    my_page = {}
+    my_page['title'] = ''
+    my_page['location'] = ''
     print game_id
     print operation
     if not operation or not game_id:
-        print "Not enough parameters."
-        return "ERROR"
+        app.logger.debug('Error while executing operation "' + operation + '" with game_id: ' +
+                         str(game_id) + ' for user "' + user['steam_id'] + '": Not enough parameters.')
+        return render_template('error.html', my_page=my_page, user=user)
     if operation == 'Add':
         flash('Added "' + game_name + '" to new games.', 'blue')
     elif operation == 'Remove':
         flash('Removed "' + game_name + '" from new games.', 'blue')
-    games.change_game_preference(g.user.steam_id, game_id, operation)
+    app.logger.debug('Executing operation "' + operation + '" with game_id: ' +
+                     str(game_id) + ' for user "' + user['steam_id'] + '".')
+    games.change_game_preference(user['steam_id'], game_id, operation)
     return redirect(request.referrer)
 
 
@@ -117,11 +130,13 @@ def before_request():
 def login():
     if g.user is not None and g.user.is_authenticated:
         return redirect(url_for('index'))
+    app.logger.debug('Starting authentication process.')
     return oid.try_login('https://steamcommunity.com/openid')
 
 
 @app.route('/logout')
 def logout():
+    app.logger.debug('Terminating session for user "' + g.user.steam_id + '".')
     session.pop('user_id', None)
     flash('You have been logged out', 'green')
     return redirect(url_for('index'))
@@ -146,6 +161,7 @@ def create_or_login(resp):
         next_url = urlparse(params['next'][0]).path
     else:
         next_url = oid.get_next_url()
+    app.logger.debug('User "' + g.user.steam_id + '" authenticated.')
     return redirect(next_url)
 
 
@@ -180,4 +196,6 @@ def generate_list_view(my_games, user, page_details, section):
         else:
             abort(404)
     else:
+        app.logger.debug('Error while getting games for user "' +
+                         user['steam_id'] + '".')
         return render_template('error.html', my_page=page_details, user=user)
