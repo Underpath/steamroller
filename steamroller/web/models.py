@@ -62,7 +62,6 @@ class Owned_Games(db.Model):
 
 class Games_in_Store(db.Model):
     __tablename__ = 'games_in_store'
-    #__table_args__ = (db.UniqueConstraint('store_id', 'game_id', name='_game_in_store'),)
     store_id = db.Column(db.Integer, db.ForeignKey('store.id'), primary_key=True)
     game_id = db.Column(db.Integer, db.ForeignKey('game.id'), primary_key=True)
     game_store_id = db.Column(db.Integer)

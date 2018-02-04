@@ -9,7 +9,7 @@ from steamroller.lib import config
 def config_logs(app):
     logging_level = config.get_option('LOGGING_LEVEL')
     formatter = logging.Formatter(
-        "[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s")
+        "%(asctime)s;%(client_ip)s;%(filename)s:%(lineno)d;%(levelname)s;%(message)s")
     handler = RotatingFileHandler('/tmp/steamroller.log', maxBytes=10000, backupCount=1)
     logging.getLogger().setLevel(logging_level)
     handler.setLevel(logging_level)

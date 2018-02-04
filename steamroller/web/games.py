@@ -6,6 +6,7 @@ from steamroller.web import db
 import models
 from datetime import datetime
 from sqlalchemy import or_
+from flask import request, current_app
 
 
 class Steam():
@@ -125,10 +126,10 @@ def is_early_access(game_id):
             time_since_update = datetime.now() - game.last_checked
             threshold = int(config.get_option('GAME_REFRESH_TIME'))
             if time_since_update.total_seconds() < threshold:
-                print "Game updated recently, returning value from DB."
+                current_app.logger.debug('Game updated recently, returning value from DB', extra=get_log_data())
                 return bool(game.is_early_access)
 
-        print "Checking early access status on Steam."
+        current_app.logger.debug('Checking early access status on Steam', extra=get_log_data())
         api_url = config.get_option('STEAMAPP_DETAILS_API')
         appid = game.games_in_store[0].game_store_id
         params = {'appids': appid}
@@ -137,7 +138,7 @@ def is_early_access(game_id):
             return False
         for key in app_data:
             if app_data[key]['success'] is False:
-                print "Request to API returned unsuccesful."
+                current_app.logger.debug('Request to Steam API returned unsuccesful', extra=get_log_data())
                 return False
             if 'genres' not in app_data[str(appid)]['data']:
                 return False
@@ -156,7 +157,7 @@ def is_early_access(game_id):
             return bool(game.is_early_access)
         return False
     else:
-        print "Not early access according to the DB."
+        current_app.logger.debug('Not early access according to the DB', extra=get_log_data())
         return False
 
 
@@ -167,8 +168,7 @@ def pick_game(games):
 
     count = len(games)
     pick = SystemRandom().randrange(count)
-    print "Game picked:"
-    print games[pick]
+    current_app.logger.debug('Picked game {}'.format(games[pick]), extra=get_log_data())
     games[pick]['is_early_access'] = is_early_access(games[pick]['id'])
     return count, games[pick]
 
@@ -206,20 +206,29 @@ def make_request_to_api(base_url, params=None):
     return the response as dictionary. If the request fails returns False.
     """
 
-    print "Making request to: " + base_url
-    print "\tParams: " + str(params)
+    redacted_params = config.get_option('REDACT_FIELDS', 'str_list')
+
+    if isinstance(params, dict):
+        log_params = {}
+        for key in params:
+            if key in redacted_params:
+                log_params[key] = "*REDACTED*"
+            else:
+                log_params[key] = params[key]
+    else:
+        log_params = params
+
+    current_app.logger.debug('Making request to: {}\t{}'.format(base_url, str(log_params)), extra=get_log_data())
     try:
         r = requests.get(base_url, params=params)
-        print "Request made to: " + r.url
     except:
-        print 'There was an error trying to reach the website.'
+        current_app.logger.debug('There was an error trying to reach the website', extra=get_log_data())
         return False
     if r.status_code == 200:
         response = r.json()
         return response
     else:
-        print "API request returned non 200 status code:\n\tURL: " + r.url + \
-            "Status code: " + str(r.status_code)
+        current_app.logger.debug('API request returned non 200 status code:\tURL: {}\tStatus code: {}'.format(r.url, str(r.status_code)), extra=get_log_data())
     return False
 
 
@@ -237,12 +246,12 @@ def trigger_update(user):
         time_since_update = datetime.now() - user.games_updated
         threshold = int(config.get_option('USER_REFRESH_TIME'))
         if time_since_update.total_seconds() < threshold:
-            print "Fetching games from local DB."
+            current_app.logger.debug('Fetching games from local DB for user "{}"'.format(str(user.steam_id)), extra=get_log_data())
             return 1
-    print "Updating games for user."
+    current_app.logger.debug('Updating games for user "{}"'.format(str(user.steam_id)), extra=get_log_data())
 
     if not update_games_for_user(user):
-        print 'not update_games_for_user'
+        current_app.logger.debug('not update_games_for_user', extra=get_log_data())
         return 2
     return 0
 
@@ -262,11 +271,6 @@ def update_games_for_user(user):
     if not games:
         return False
     games = games['response']['games']
-    # {u'playtime_forever': 12, u'name': u'Zombie Shooter',
-    # u'img_logo_url': u'2e4082032b2a7e8b1782fc7515fcf5c4056d5050',
-    # u'appid': 33130,
-    # u'img_icon_url': u'db67664d7085947dd8d7dd74739230d9a09be5c7',
-    # 'sortname': u'zombie shooter'}
     user.games_updated = datetime.now()
 
     store = models.Store.query.filter_by(name='Steam').one_or_none()
@@ -328,18 +332,23 @@ def change_game_preference(steam_id, game_id, operation):
     owned_game_obj = models.Owned_Games.query.filter_by(game_id=game_id, user=user).one_or_none()
 
     if not owned_game_obj:
-        print "Seems user " + str(user.id) + "does not own game " + str(game_id)
+        current_app.logger.debug('Seems user "{}" does not own game "{}"'.format(str(user.steam_id), str(game_id)), extra=get_log_data())
 
     if operation == 'Remove' and owned_game_obj.exclude is False:
         owned_game_obj.exclude = True
         owned_game_obj.include = False
-        print "Excluding game " + str(game_id) + " for user " + str(user.id)
+        current_app.logger.debug('Excluding game "{}" for user "{}"'.format(str(game_id), str(user.steam_id)), extra=get_log_data())
     elif operation == 'Add' and owned_game_obj.include is False:
         owned_game_obj.exclude = False
         owned_game_obj.include = True
         is_early_access(game_id)
-        print "Including game " + str(game_id) + " for user " + str(user.id)
+        current_app.logger.debug('Including game "{}" for user "{}"'.format(str(game_id), str(user.steam_id)), extra=get_log_data())
     else:
-        print "Game already excluded."
+        current_app.logger.debug('Game already excluded', extra=get_log_data())
     db.session.add(owned_game_obj)
     db.session.commit()
+
+
+def get_log_data():
+    logdata = {'client_ip': request.remote_addr}
+    return logdata

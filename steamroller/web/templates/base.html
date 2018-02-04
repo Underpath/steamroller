@@ -70,7 +70,20 @@
                 </br>
                 </div>
             <footer class="w3-container w3-theme my_footer">
-                <p><strong>Steamroller!</strong> - Powered by <a href="http://store.steampowered.com/"><img src="http://store.edgecast.steamstatic.com/public/shared/images/header/globalheader_logo.png" height=20 style="padding-left: 8"></a></p>
+                <div style="float: left;">
+                    <p>
+                        <strong>Steamroller!</strong> - Powered by <a href="http://store.steampowered.com/" rel="noopener noreferrer" target="_blank">
+                            <img src="http://store.edgecast.steamstatic.com/public/shared/images/header/globalheader_logo.png" height=20 style="padding-left: 8">
+                        </a>
+                    </p>
+                </div>
+                <div style="float: right;">
+                    <p>
+                        <a href="https://github.com/Sarmacid/steamroller" rel="noopener noreferrer" target="_blank">
+                            <img src="{{ url_for('static', filename='img/GitHub.png') }}" width="80%" height="80%">
+                        </a>
+                    </p>
+                </div>
             </footer>
             </div>
 
