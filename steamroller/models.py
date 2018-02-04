@@ -1,4 +1,4 @@
-from steamroller.web import db
+from steamroller import db
 from sqlalchemy import Integer
 
 

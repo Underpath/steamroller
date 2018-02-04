@@ -1,11 +1,11 @@
-from steamroller.web import app, oid, db
+from steamroller import app, oid, db
 from flask import render_template, request, flash, redirect, g, session, \
     url_for, abort
 from functools import wraps
 import games
 import util
 import re
-from steamroller.web.models import User
+from models import User
 from urlparse import urlparse, parse_qs
 
 

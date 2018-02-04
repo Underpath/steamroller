@@ -5,9 +5,7 @@ from logging.handlers import RotatingFileHandler
 
 
 CONFIG_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                           '../config/config.cfg'))
-#CONFIG_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__),
-#                                           '../../config/config.cfg'))
+                                           'config/config.cfg'))
 config = ConfigParser.ConfigParser()
 config.read(CONFIG_FILE)
 
@@ -156,8 +154,20 @@ class Flask_config():
     SECRET_KEY = 'you-will-never-guess'
     SECRET_KEY = get_option('SECRET_KEY')
 
-    basedir = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
+    basedir = os.path.split(os.path.abspath(__file__))[0]
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + \
                               os.path.join(basedir, get_option('DATABASE_PATH'))
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+
+def get_log_handler():
+    logging_level = get_option('LOGGING_LEVEL')
+    formatter = logging.Formatter(
+        "%(asctime)s;%(client_ip)s;%(filename)s:%(lineno)d;%(levelname)s;%(message)s")
+
+    handler = RotatingFileHandler(get_option('LOG_FILE'), maxBytes=int(get_option('LOG_SIZE')), backupCount=1)
+    logging.getLogger().setLevel(logging_level)
+    handler.setLevel(logging_level)
+    handler.setFormatter(formatter)
+    return handler

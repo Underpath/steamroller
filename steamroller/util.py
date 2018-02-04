@@ -1,5 +1,5 @@
 from math import ceil
-from steamroller.lib import config
+import config
 
 
 def paginate(section, my_games):
@@ -14,8 +14,6 @@ def paginate(section, my_games):
     section_count = int(ceil(1.0 * game_count / games_per_section))
 
     if section > section_count:
-        print section
-        print section_count
         return False
     for i in range(games_per_section):
         try:

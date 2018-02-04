@@ -1,8 +1,8 @@
-from steamroller.lib import config
+import config
 import requests
 from operator import itemgetter
 from random import SystemRandom
-from steamroller.web import db
+from steamroller import db
 import models
 from datetime import datetime
 from sqlalchemy import or_

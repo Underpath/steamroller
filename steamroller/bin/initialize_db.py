@@ -1,9 +1,9 @@
 #!/usr/bin/env python2
 
 from os import sys, path
-sys.path.append('../..')
-from steamroller.web import db
-from steamroller.web import models
+sys.path.append('..')
+from steamroller import db
+import models
 
 db.drop_all()
 
