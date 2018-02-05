@@ -5,21 +5,20 @@
         {% else %}
             <title>Steamroller</title>
         {% endif %}
-        <link href="{{ url_for('static', filename='layout.css') }}" rel="stylesheet" type="text/css" media="all">
+        <link href="{{ url_for('static', filename='layout.min.css') }}" rel="stylesheet" type="text/css" media="all">
     </head>
     <body>
 
-            <nav class="w3-sidebar w3-bar-block w3-collapse w3-animate-left w3-card-2" style="z-index:3;width:180px;" id="mySidebar">
-                <a class="w3-bar-item w3-button w3-hide-large w3-large" href="javascript:void(0)" onclick="w3_close()">Close <i class="fa fa-remove"></i></a>
-                <a class="w3-bar-item w3-button{% if my_page.location == 'about' %} w3-dark-grey{% endif %}" href="/index">About</a>
+            <nav class="sr-sidebar sr-bar-block sr-collapse sr-animate-left sr-card-2" style="z-index:3;width:180px;" id="mySidebar">
+                <a class="sr-bar-item sr-button{% if my_page.location == 'about' %} sr-dark-grey{% endif %}" href="/index">About</a>
                 {% if user %}
-                    <a class="w3-bar-item w3-button{% if my_page.location == 'all' %} w3-dark-grey{% endif %}" href="/all">All my games</a>
-                    <a class="w3-bar-item w3-button{% if my_page.location == 'new' %} w3-dark-grey{% endif %}" href="/new">My new games</a>
-                    <a class="w3-bar-item w3-button{% if my_page.location == 'pick' %} w3-dark-grey{% endif %}" href="/pick">Pick game</a>
+                    <a class="sr-bar-item sr-button{% if my_page.location == 'all' %} sr-dark-grey{% endif %}" href="/all">All my games</a>
+                    <a class="sr-bar-item sr-button{% if my_page.location == 'new' %} sr-dark-grey{% endif %}" href="/new">My new games</a>
+                    <a class="sr-bar-item sr-button{% if my_page.location == 'pick' %} sr-dark-grey{% endif %}" href="/pick">Pick game</a>
                 {% endif %}
             </nav>
-            <div class="w3-main" style="margin-left:180px;position:relative;min-height: 100%">
-                <header class="w3-container w3-theme" style="padding: 0px; background-color:#4d4d4d; text-align:right;">
+            <div class="sr-main" style="margin-left:180px;position:relative;min-height: 100%">
+                <header class="sr-container" style="padding: 0px; background-color:#4d4d4d; text-align:right;">
                 {% if user %}
                     <div class="dropdown">
                         <button class="dropdown_button">
@@ -45,7 +44,7 @@
                 {% endif %}
                 </header>
 
-                <div class="w3-container w3-padding-32" style="padding-left:32px;">
+                <div class="sr-container sr-padding-32" style="padding-left:32px;">
 
                     {% if my_page %}
                         <h2>{{ my_page.title }}</h2>
@@ -69,7 +68,7 @@
                     {% endblock %}
                 </br>
                 </div>
-            <footer class="w3-container w3-theme my_footer">
+            <footer class="sr-container my_footer">
                 <div style="float: left;">
                     <p>
                         <strong>Steamroller!</strong> - Powered by <a href="http://store.steampowered.com/" rel="noopener noreferrer" target="_blank">

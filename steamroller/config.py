@@ -151,7 +151,6 @@ class Flask_config():
     """
 
     WTF_CSRF_ENABLED = True
-    SECRET_KEY = 'you-will-never-guess'
     SECRET_KEY = get_option('SECRET_KEY')
 
     basedir = os.path.split(os.path.abspath(__file__))[0]
