@@ -12,6 +12,8 @@ from urlparse import urlparse, parse_qs
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        if g.user is None and request.path.lower() == '/logout':
+            return redirect(url_for('index'))
         if g.user is None:
             flash('You should log in before trying that', 'red')
             return redirect(url_for('index', next=request.url))
@@ -129,11 +131,17 @@ def login():
 
 
 @app.route('/logout')
+@login_required
 def logout():
     app.logger.debug('Terminating session for user "{}".'.format(g.user.steam_id), extra=games.get_log_data())
     session.pop('user_id', None)
     flash('You have been logged out', 'green')
     return redirect(url_for('index'))
+
+
+@app.route('/health')
+def health_check():
+    return 'Healthy'
 
 
 @oid.after_login
