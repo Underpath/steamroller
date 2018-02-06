@@ -153,9 +153,7 @@ class Flask_config():
     WTF_CSRF_ENABLED = True
     SECRET_KEY = get_option('SECRET_KEY')
 
-    basedir = os.path.split(os.path.abspath(__file__))[0]
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + \
-                              os.path.join(basedir, get_option('DATABASE_PATH'))
+    SQLALCHEMY_DATABASE_URI = get_option('DATABASE_URI')
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

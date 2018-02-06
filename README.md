@@ -15,3 +15,4 @@ Get rid of the burden of having to pick which game in your Steam library you wan
 * flask-openid
 * flask-sqlalchemy
 * flask-wtf
+* mysql-python

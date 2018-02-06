@@ -1,5 +1,5 @@
 from steamroller import db
-from sqlalchemy import Integer
+from sqlalchemy.orm import validates
 
 
 class User(db.Model):
@@ -26,10 +26,17 @@ class User(db.Model):
             db.session.commit()
         return rv
 
+    @validates('nickname')
+    def validate_name(self, key, value):
+        max_len = getattr(self.__class__, key).prop.columns[0].type.length
+        if value and len(value) > max_len:
+            return '{}...'.format(value[:max_len - 3].encode('utf-8'))
+        return value
+
 
 class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(40))
+    name = db.Column(db.String(60))
     is_early_access = db.Column(db.Integer, default=None)
     img_logo_url = db.Column(db.String(40))
     last_checked = db.Column(db.DateTime)
@@ -39,10 +46,17 @@ class Game(db.Model):
         self.img_logo_url = img_logo_url
         self.is_early_access = is_early_access
 
+    @validates('name')
+    def validate_name(self, key, value):
+        max_len = getattr(self.__class__, key).prop.columns[0].type.length
+        if value and len(value) > max_len:
+            return '{}...'.format(value[:max_len - 3].encode('utf-8'))
+        return value
+
 
 class Store(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(30))
+    name = db.Column(db.String(20))
 
     def __init__(self, name):
         self.name = name
