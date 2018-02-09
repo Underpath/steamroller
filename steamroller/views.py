@@ -31,7 +31,7 @@ def index():
     my_page = {}
     my_page['title'] = 'About'
     my_page['location'] = 'about'
-    return render_template('base.html', my_page=my_page, user=user)
+    return render_template('about.html', my_page=my_page, user=user)
 
 
 @app.route('/all/', defaults={'section': 1})

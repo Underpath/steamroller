@@ -155,6 +155,15 @@ a.pagination_links{
     border: solid #1b5d7e;
     color: #96cde9;
 }
+.screenshot {
+    border=10px;
+    border-style: solid;
+    width=0px;
+    border-radius: 5px;
+    display: inline-block;
+    overflow: hidden;
+    width: 75%;
+}
 .sr-bar-block .sr-bar-item{width:100%;display:block;padding:15px 16px;text-align:left;background-color:inherit;color:inherit;border:none;outline:none;white-space:normal}
 .sr-container:after,.sr-container:before
 {content:"";display:table;clear:both}
