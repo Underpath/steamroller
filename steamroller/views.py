@@ -179,9 +179,10 @@ def page_not_found(e):
 
 def get_user_details():
     user = {}
-    user['steam_id'] = g.user.steam_id
-    user['nickname'] = g.user.nickname
-    user['avatar_url'] = g.user.avatar_url
+    if g.user:
+        user['steam_id'] = g.user.steam_id
+        user['nickname'] = g.user.nickname
+        user['avatar_url'] = g.user.avatar_url
     return user
 
 
@@ -206,11 +207,8 @@ def generate_list_view(my_games, user, page_details, section):
 @app.endpoint('static')
 def static(filename):
     static_url = app.config.get('STATIC_URL')
-    print static_url
-    print filename
 
     if static_url:
-        print urljoin(static_url, filename)
         return redirect(urljoin(static_url, filename))
 
     return app.send_static_file(filename)
