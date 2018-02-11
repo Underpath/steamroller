@@ -6,7 +6,7 @@ import games
 import util
 import re
 from models import User
-from urlparse import urlparse, parse_qs
+from urlparse import urlparse, parse_qs, urljoin
 
 
 def login_required(f):
@@ -201,3 +201,16 @@ def generate_list_view(my_games, user, page_details, section):
     else:
         app.logger.error('Error while getting games for user "{}".'.format(user['steam_id']), extra=games.get_log_data())
         return render_template('error.html', my_page=page_details, user=user)
+
+
+@app.endpoint('static')
+def static(filename):
+    static_url = app.config.get('STATIC_URL')
+    print static_url
+    print filename
+
+    if static_url:
+        print urljoin(static_url, filename)
+        return redirect(urljoin(static_url, filename))
+
+    return app.send_static_file(filename)

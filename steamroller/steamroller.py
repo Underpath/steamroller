@@ -11,10 +11,11 @@ def setup_logs(app):
 
 
 app = Flask(__name__)
+setup_logs(app)
 app.config.from_object('steamroller.config.Flask_config')
 db = SQLAlchemy(app)
 oid = OpenID(app)
 csrf = CSRFProtect(app)
-setup_logs(app)
+
 
 import views, models

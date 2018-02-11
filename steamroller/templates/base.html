@@ -1,11 +1,12 @@
 <html>
     <head>
         {% if my_page %}
-            <title>{{ my_page.title }} - Steamroller</title>
+            <title>Steamroller - {{ my_page.title }}</title>
         {% else %}
             <title>Steamroller</title>
         {% endif %}
-        <link href="{{ url_for('static', filename='layout.min.css') }}" rel="stylesheet" type="text/css" media="all">
+        <link href="{{ url_for('static', filename='css/layout.min.css') }}" rel="stylesheet" type="text/css" media="all">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
     </head>
     <body>
 

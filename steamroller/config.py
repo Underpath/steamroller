@@ -152,9 +152,9 @@ class Flask_config():
 
     WTF_CSRF_ENABLED = True
     SECRET_KEY = get_option('SECRET_KEY')
-
+    FLASKS3_BUCKET_NAME = get_option('FLASKS3_BUCKET_NAME')
     SQLALCHEMY_DATABASE_URI = get_option('DATABASE_URI')
-
+    STATIC_URL = get_option('STATIC_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
