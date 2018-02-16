@@ -10,18 +10,21 @@ config = ConfigParser.ConfigParser()
 config.read(CONFIG_FILE)
 
 
-def get_option(option, option_type='str'):
+def get_option(option, option_type=None):
     """
     Grabs the value of the option from the config file and returns it in the
     format requested.
     """
-    option_value = config.get(get_section_name(), option)
-    if option_type == 'str':
-        return option_value
-    elif option_type == 'str_list':
-        return option_value.split(',')
-    elif option_type == 'int_list':
-        return map(int, option_value.split(','))
+
+    if option_type == 'bool':
+        option_value = config.getboolean(get_section_name(), option)
+    else:
+        option_value = config.get(get_section_name(), option)
+        if option_type == 'str_list':
+            option_value = option_value.split(',')
+        elif option_type == 'int_list':
+            option_value = map(int, option_value.split(','))
+    return option_value
 
 
 def get_section_name():
@@ -151,11 +154,16 @@ class Flask_config():
     """
 
     WTF_CSRF_ENABLED = True
+    SESSION_COOKIE_HTTPONLY = True
     SECRET_KEY = get_option('SECRET_KEY')
-    FLASKS3_BUCKET_NAME = get_option('FLASKS3_BUCKET_NAME')
     SQLALCHEMY_DATABASE_URI = get_option('DATABASE_URI')
-    STATIC_URL = get_option('STATIC_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    if get_option('TEST'):
+        DEBUG = True
+        STATIC_URL = None
+    else:
+        DEBUG = False
+        STATIC_URL = get_option('STATIC_URL')
 
 
 def get_log_handler():
