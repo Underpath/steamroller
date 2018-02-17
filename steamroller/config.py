@@ -153,7 +153,7 @@ class Flask_config():
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SESSION_COOKIE_SECURE = True
     REMEMBER_COOKIE_SECURE = True
-    if get_option('TEST'):
+    if get_option('TEST', 'bool'):
         DEBUG = True
         STATIC_URL = None
     else:
