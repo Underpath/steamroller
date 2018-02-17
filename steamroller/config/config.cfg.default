@@ -1,7 +1,6 @@
 [Steam]
 OWNED_GAMES_API=https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?
 VANITY_URL_TO_STEAMID_API=http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?
-STEAMCOMMUNITY_BASE_URL=https://steamcommunity.com/id
 STEAMAPP_DETAILS_API=http://store.steampowered.com/api/appdetails
 PCGW_API=http://pcgamingwiki.com/w/api.php
 STEAM_USER_INFO_API=http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0001/

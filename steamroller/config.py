@@ -87,12 +87,6 @@ def get_config_file_options():
     option['default_value'] = 'a,an,the'
     options.append(option)
     option = {}
-    option['name'] = 'STEAMCOMMUNITY_BASE_URL'
-    option['mandatory'] = True
-    option['comment'] = "Base URL for Steamcommunity's vanity URLs."
-    option['default_value'] = 'https://steamcommunity.com/id'
-    options.append(option)
-    option = {}
     option['name'] = 'STEAMAPP_DETAILS_API'
     option['mandatory'] = True
     option['comment'] = "Base URL for retrieving information on a Steam APPID."
