@@ -9,13 +9,15 @@ from sqlalchemy import or_
 from flask import request, current_app
 
 
+STEAM_API_KEY = 'STEAM_API_KEY'
+
 class Steam():
     """
     Stores the steam_id for a user, has the functionality to get game related
     data for the steam_id.
     """
 
-    def __init__(self, steam_id=config.get_option('STEAM_ID')):
+    def __init__(self, steam_id):
         self.steam_id = steam_id
         self.user = models.User.query.filter_by(steam_id=steam_id)
         self.user = self.user.one_or_none()
@@ -26,7 +28,7 @@ class Steam():
         """
 
         params = {
-            'key': config.get_option('API_KEY'),
+            'key': config.get_option(STEAM_API_KEY),
             'steamids': self.steam_id
         }
         api_url = config.get_option('STEAM_USER_INFO_API')
@@ -263,7 +265,7 @@ def update_games_for_user(user):
     DB.
     """
 
-    params = {'key': config.get_option('API_KEY'),
+    params = {'key': config.get_option(STEAM_API_KEY),
               'steamid': user.steam_id,
               'include_appinfo': 1, 'format': 'json'}
     games = make_request_to_api(config.get_option('OWNED_GAMES_API'),

@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 
-from os import sys, path
+from os import sys
 sys.path.append('..')
 from steamroller import db
 import models

@@ -1,7 +1,6 @@
 import ConfigParser
 import os
 import logging
-from logging.handlers import RotatingFileHandler
 
 
 CONFIG_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__),
@@ -44,7 +43,7 @@ def get_config_file_options():
     option['default_value'] = ''
     options.append(option)
     option = {}
-    option['name'] = 'API_KEY'
+    option['name'] = 'STEAM_API_KEY'
     option['mandatory'] = True
     option['comment'] = "Place your Steam API key here."
     option['default_value'] = ''
@@ -158,6 +157,8 @@ class Flask_config():
     SECRET_KEY = get_option('SECRET_KEY')
     SQLALCHEMY_DATABASE_URI = get_option('DATABASE_URI')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SESSION_COOKIE_SECURE = True
+    REMEMBER_COOKIE_SECURE = True
     if get_option('TEST'):
         DEBUG = True
         STATIC_URL = None
@@ -167,11 +168,14 @@ class Flask_config():
 
 
 def get_log_handler():
-    logging_level = get_option('LOGGING_LEVEL')
+    if get_option('TEST'):
+        logging_level = 'DEBUG'
+    else:
+        logging_level = get_option('LOGGING_LEVEL')
     formatter = logging.Formatter(
         "%(asctime)s;%(client_ip)s;%(filename)s:%(lineno)d;%(levelname)s;%(message)s")
 
-    handler = RotatingFileHandler(get_option('LOG_FILE'), maxBytes=int(get_option('LOG_SIZE')), backupCount=1)
+    handler = logging.StreamHandler()
     logging.getLogger().setLevel(logging_level)
     handler.setLevel(logging_level)
     handler.setFormatter(formatter)
