@@ -11,6 +11,7 @@ from flask import request, current_app
 
 STEAM_API_KEY = 'STEAM_API_KEY'
 
+
 class Steam():
     """
     Stores the steam_id for a user, has the functionality to get game related
@@ -221,11 +222,13 @@ def make_request_to_api(base_url, params=None):
         log_params = params
 
     current_app.logger.debug('Making request to: {}\t{}'.format(base_url, str(log_params)), extra=get_log_data())
+
     try:
         r = requests.get(base_url, params=params)
     except:
         current_app.logger.debug('There was an error trying to reach the website', extra=get_log_data())
         return False
+
     if r.status_code == 200:
         response = r.json()
         return response
