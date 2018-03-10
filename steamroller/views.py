@@ -106,9 +106,9 @@ def change_game_preference():
         app.logger.error('Error while executing operation "{}" with game_id: {} for user "{}": Not enough parameters.'.format(operation, str(game_id), user['steam_id']), extra=games.get_log_data())
         return render_template('error.html', my_page=my_page, user=user)
     if operation == 'Add':
-        flash('Added "{}" to new games.'.format(game_name), 'blue')
+        flash('Added "{}" to new games.'.format(game_name.encode('utf-8')), 'blue')
     elif operation == 'Remove':
-        flash('Removed "{}" from new games.'.format(game_name), 'blue')
+        flash('Removed "{}" from new games.'.format(game_name.encode('utf-8')), 'blue')
     app.logger.debug('Executing operation "{}" with game_id: {} for user "{}".'.format(operation, str(game_id), user['steam_id']), extra=games.get_log_data())
     games.change_game_preference(user['steam_id'], game_id, operation)
     return redirect(request.referrer)
