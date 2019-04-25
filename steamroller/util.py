@@ -1,5 +1,6 @@
 from math import ceil
-import config
+
+from . import config
 
 
 def paginate(section, my_games):
@@ -9,7 +10,7 @@ def paginate(section, my_games):
     """
 
     games_in_section = []
-    games_per_section = int(config.get_option('GAMES_PER_SECTION'))
+    games_per_section = int(config.get_option("GAMES_PER_SECTION"))
     game_count = len(my_games)
     section_count = int(ceil(1.0 * game_count / games_per_section))
 
@@ -23,12 +24,12 @@ def paginate(section, my_games):
 
     pagination = {}
 
-    pagination['links'] = pagination_links(section_count, section)
+    pagination["links"] = pagination_links(section_count, section)
 
-    pagination['game_count'] = game_count
-    pagination['games'] = games_in_section
-    pagination['section_count'] = section_count
-    pagination['section'] = section
+    pagination["game_count"] = game_count
+    pagination["games"] = games_in_section
+    pagination["section_count"] = section_count
+    pagination["section"] = section
     return pagination
 
 

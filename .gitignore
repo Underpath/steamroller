@@ -7,3 +7,5 @@ _test_*
 steamroller/img/
 steamroller/static/img/
 Extras/
+flask_session
+steamroller/bin/steamroller

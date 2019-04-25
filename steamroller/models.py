@@ -1,5 +1,6 @@
-from steamroller import db
 from sqlalchemy.orm import validates
+
+from .steamroller import db
 
 
 class User(db.Model):
@@ -26,11 +27,11 @@ class User(db.Model):
             db.session.commit()
         return rv
 
-    @validates('nickname')
+    @validates("nickname")
     def validate_name(self, key, value):
         max_len = getattr(self.__class__, key).prop.columns[0].type.length
         if value and len(value) > max_len:
-            return '{}...'.format(value[:max_len - 3].encode('utf-8'))
+            return "{}...".format(value[: max_len - 3].encode("utf-8"))
         return value
 
 
@@ -46,11 +47,11 @@ class Game(db.Model):
         self.img_logo_url = img_logo_url
         self.is_early_access = is_early_access
 
-    @validates('name')
+    @validates("name")
     def validate_name(self, key, value):
         max_len = getattr(self.__class__, key).prop.columns[0].type.length
         if value and len(value) > max_len:
-            return '{}...'.format(value[:max_len - 3].encode('utf-8'))
+            return "{}...".format(value[: max_len - 3].encode("utf-8"))
         return value
 
 
@@ -63,9 +64,9 @@ class Store(db.Model):
 
 
 class Owned_Games(db.Model):
-    __tablename__ = 'owned_games'
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    game_id = db.Column(db.Integer, db.ForeignKey('game.id'), primary_key=True)
+    __tablename__ = "owned_games"
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+    game_id = db.Column(db.Integer, db.ForeignKey("game.id"), primary_key=True)
     is_new = db.Column(db.Boolean)
     include = db.Column(db.Boolean, default=False)
     exclude = db.Column(db.Boolean, default=False)
@@ -75,9 +76,9 @@ class Owned_Games(db.Model):
 
 
 class Games_in_Store(db.Model):
-    __tablename__ = 'games_in_store'
-    store_id = db.Column(db.Integer, db.ForeignKey('store.id'), primary_key=True)
-    game_id = db.Column(db.Integer, db.ForeignKey('game.id'), primary_key=True)
+    __tablename__ = "games_in_store"
+    store_id = db.Column(db.Integer, db.ForeignKey("store.id"), primary_key=True)
+    game_id = db.Column(db.Integer, db.ForeignKey("game.id"), primary_key=True)
     game_store_id = db.Column(db.Integer)
 
     store = db.relationship(Store, backref="games_in_store")

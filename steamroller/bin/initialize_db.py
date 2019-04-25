@@ -1,9 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-from os import sys
-sys.path.append('..')
-from steamroller import db
-import models
+from steamroller import db, models
 
 db.drop_all()
 
