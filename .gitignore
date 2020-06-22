@@ -9,3 +9,5 @@ steamroller/static/img/
 Extras/
 flask_session
 steamroller/bin/steamroller
+Pipfile*
+data/

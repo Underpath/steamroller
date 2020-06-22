@@ -73,17 +73,17 @@ def get_config_file_options():
     option = {}
     option["name"] = "INCLUDE"
     option["mandatory"] = False
-    option["comment"] = (
-        "Games to be included in the draw that may have a playtime of more than '0'."
-    )
+    option[
+        "comment"
+    ] = "Games to be included in the draw that may have a playtime of more than '0'."
     option["default_value"] = ""
     options.append(option)
     option = {}
     option["name"] = "DETERMINERS"
     option["mandatory"] = False
-    option["comment"] = (
-        "Steam does not take determiners into account when sorting games by title, place here the determiners you want ignored when sorting games by title."
-    )
+    option[
+        "comment"
+    ] = "Steam does not take determiners into account when sorting games by title, place here the determiners you want ignored when sorting games by title."
     option["default_value"] = "a,an,the"
     options.append(option)
     option = {}
@@ -115,17 +115,17 @@ def get_config_file_options():
     option = {}
     option["name"] = "USER_REFRESH_TIME"
     option["mandatory"] = True
-    option["comment"] = (
-        "How much time must pass in seconds before a user's games are fetched again from Steam instead of the local DB. Default 10 mins."
-    )
+    option[
+        "comment"
+    ] = "How much time must pass in seconds before a user's games are fetched again from Steam instead of the local DB. Default 10 mins."
     option["default_value"] = "600"
     options.append(option)
     option = {}
     option["name"] = "GAME_REFRESH_TIME"
     option["mandatory"] = True
-    option["comment"] = (
-        "How much time must pass in seconds before a game's attributes are updated from Steam instead of the local DB. Default 1 day."
-    )
+    option[
+        "comment"
+    ] = "How much time must pass in seconds before a game's attributes are updated from Steam instead of the local DB. Default 1 day."
     option["default_value"] = "86400"
     options.append(option)
     return options

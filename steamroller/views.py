@@ -2,8 +2,7 @@ import re
 from functools import wraps
 from urllib.parse import parse_qs, urljoin, urlparse
 
-from flask import (abort, flash, g, redirect, render_template, request,
-                   session, url_for)
+from flask import abort, flash, g, redirect, render_template, request, session, url_for
 
 from . import games, util
 from .models import User
@@ -162,9 +161,9 @@ def before_request():
 @oid.loginhandler
 def login():
     if g.user is not None and g.user.is_authenticated:
-        return redirect(url_for('index'))
-    app.logger.debug('Starting authentication process.', extra=games.get_log_data())
-    return oid.try_login('https://steamcommunity.com/openid')
+        return redirect(url_for("index"))
+    app.logger.debug("Starting authentication process.", extra=games.get_log_data())
+    return oid.try_login("https://steamcommunity.com/openid")
 
 
 @app.route("/logout")
@@ -187,7 +186,7 @@ def health_check():
 @oid.after_login
 def create_or_login(resp):
     _steam_id_re = re.compile("steamcommunity.com/openid/id/(.*?)$")
-    steam_id = _steam_id_re.search(dict(request.args)["openid.identity"][0]).group(1)
+    steam_id = _steam_id_re.search(dict(request.args)["openid.identity"]).group(1)
     s = games.Steam(steam_id)
     steamdata = s.user_info()
     nickname = steamdata["personaname"]

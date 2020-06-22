@@ -293,6 +293,7 @@ def update_games_for_user(user):
     DB.
     """
 
+    # Get owned games from the Steam API.
     params = {
         "key": config.get_option(STEAM_API_KEY),
         "steamid": user.steam_id,
@@ -309,8 +310,11 @@ def update_games_for_user(user):
     records = []
     with db.session.no_autoflush:
         for game in games:
+            # Check if the game is already in the DB.
             game_obj = models.Game.query.filter_by(name=game["name"])
             game_obj = game_obj.one_or_none()
+
+            # If game's not in the DB, add it to the list to be added to the DB.
             if not game_obj:
                 game_obj = models.Game(game["name"], game["img_logo_url"])
                 records.append(game_obj)
@@ -318,9 +322,13 @@ def update_games_for_user(user):
                     store=store, game=game_obj, game_store_id=game["appid"]
                 )
                 records.append(game_in_store)
-
-            game_owned = models.Owned_Games.query.filter_by(game=game_obj, user=user)
-            game_owned = game_owned.one_or_none()
+                game_owned = None
+            else:
+                # Check if the game is marked as owned.
+                game_owned = models.Owned_Games.query.filter_by(
+                    game=game_obj, user=user
+                )
+                game_owned = game_owned.one_or_none()
 
             if game["playtime_forever"] == 0:
                 is_new = True
@@ -335,6 +343,7 @@ def update_games_for_user(user):
                 records.append(
                     models.Owned_Games(user=user, game=game_obj, is_new=is_new)
                 )
+
     db.session.add_all(records)
     db.session.commit()
     return True
