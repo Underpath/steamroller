@@ -4,7 +4,7 @@ from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 
-from . import config, models, views
+from . import config
 
 
 def setup_logs(app):
@@ -20,3 +20,5 @@ oid = OpenID(app)
 sess = Session()
 sess.init_app(app)
 csrf = CSRFProtect(app)
+
+from . import models, views

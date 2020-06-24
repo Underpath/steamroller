@@ -11,3 +11,4 @@ flask_session
 steamroller/bin/steamroller
 Pipfile*
 data/
+.isort.cfg
