@@ -317,7 +317,7 @@ def update_games_for_user(user):
 
             # If game's not in the DB, add it to the list to be added to the DB.
             if not game_obj:
-                game_obj = models.Game(game["name"], game["img_logo_url"])
+                game_obj = models.Game(game["name"], game["img_icon_url"])
                 records.append(game_obj)
                 game_in_store = models.Games_in_Store(
                     store=store, game=game_obj, game_store_id=game["appid"]
