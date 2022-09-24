@@ -66,8 +66,8 @@ class Steam:
 
         games_query = games_query.filter(
             models.Owned_Games.user == user,
-            models.Owned_Games.exclude == False,
-            or_(models.Owned_Games.include == True, models.Owned_Games.is_new == True),
+            models.Owned_Games.exclude is False,
+            or_(models.Owned_Games.include is True, models.Owned_Games.is_new is True),
         )
         games_query = games_query.all()
         new_games = result_to_dict(games_query)
@@ -94,7 +94,7 @@ class Steam:
         Returns game and details from the list of all games.
         """
 
-        games = self.games()
+        games = self.get_all_games()
         return pick_game(games)
 
 
@@ -110,7 +110,7 @@ def steam_sort(games):
         for determiner in determiners:
             if sortname.lower().startswith(determiner + " "):
                 sortname = sortname.replace(determiner + " ", "")
-        sortname = sortname
+
         game["sortname"] = sortname
     return sorted(games, key=itemgetter("sortname"))
 
@@ -134,9 +134,7 @@ def is_early_access(game_id):
                 )
                 return bool(game.is_early_access)
 
-        current_app.logger.debug(
-            "Checking early access status on Steam", extra=get_log_data()
-        )
+        current_app.logger.debug("Checking early access status on Steam", extra=get_log_data())
         api_url = config.get_option("STEAMAPP_DETAILS_API")
         appid = game.games_in_store[0].game_store_id
         params = {"appids": appid}
@@ -145,9 +143,7 @@ def is_early_access(game_id):
             return False
         for key in app_data:
             if app_data[key]["success"] is False:
-                current_app.logger.debug(
-                    "Request to Steam API returned unsuccesful", extra=get_log_data()
-                )
+                current_app.logger.debug("Request to Steam API returned unsuccesful", extra=get_log_data())
                 return False
             if "genres" not in app_data[str(appid)]["data"]:
                 return False
@@ -166,9 +162,7 @@ def is_early_access(game_id):
             return bool(game.is_early_access)
         return False
     else:
-        current_app.logger.debug(
-            "Not early access according to the DB", extra=get_log_data()
-        )
+        current_app.logger.debug("Not early access according to the DB", extra=get_log_data())
         return False
 
 
@@ -197,21 +191,9 @@ def get_pcgw_url(game_id):
     """
     Returns the URL for the game in PCGamingWiki or False if not found.
     """
-    appid = get_app_id(game_id)
 
-    params = {
-        "action": "askargs",
-        "format": "json",
-        "conditions": "Steam AppID::" + str(appid),
-    }
-    api_url = config.get_option("PCGW_API")
-    pcgw_response = make_request_to_api(api_url, params)
-    if pcgw_response:
-        response = pcgw_response["query"]
-        if response["results"]:
-            url = list(response["results"].values())[0]["fullurl"]
-            return url
-    return False
+    appid = get_app_id(game_id)
+    return f"https://www.pcgamingwiki.com/api/appid.php?appid={appid}"
 
 
 def make_request_to_api(base_url, params=None):
@@ -240,9 +222,7 @@ def make_request_to_api(base_url, params=None):
     try:
         r = requests.get(base_url, params=params)
     except:
-        current_app.logger.debug(
-            "There was an error trying to reach the website", extra=get_log_data()
-        )
+        current_app.logger.debug("There was an error trying to reach the website", extra=get_log_data())
         return False
 
     if r.status_code == 200:
@@ -250,9 +230,7 @@ def make_request_to_api(base_url, params=None):
         return response
     else:
         current_app.logger.debug(
-            "API request returned non 200 status code:\tURL: {}\tStatus code: {}".format(
-                r.url, str(r.status_code)
-            ),
+            "API request returned non 200 status code:\tURL: {}\tStatus code: {}".format(r.url, str(r.status_code)),
             extra=get_log_data(),
         )
     return False
@@ -277,9 +255,7 @@ def trigger_update(user):
                 extra=get_log_data(),
             )
             return 1
-    current_app.logger.debug(
-        'Updating games for user "{}"'.format(str(user.steam_id)), extra=get_log_data()
-    )
+    current_app.logger.debug('Updating games for user "{}"'.format(str(user.steam_id)), extra=get_log_data())
 
     if not update_games_for_user(user):
         current_app.logger.debug("not update_games_for_user", extra=get_log_data())
@@ -319,16 +295,12 @@ def update_games_for_user(user):
             if not game_obj:
                 game_obj = models.Game(game["name"], game["img_icon_url"])
                 records.append(game_obj)
-                game_in_store = models.Games_in_Store(
-                    store=store, game=game_obj, game_store_id=game["appid"]
-                )
+                game_in_store = models.Games_in_Store(store=store, game=game_obj, game_store_id=game["appid"])
                 records.append(game_in_store)
                 game_owned = None
             else:
                 # Check if the game is marked as owned.
-                game_owned = models.Owned_Games.query.filter_by(
-                    game=game_obj, user=user
-                )
+                game_owned = models.Owned_Games.query.filter_by(game=game_obj, user=user)
                 game_owned = game_owned.one_or_none()
 
             if game["playtime_forever"] == 0:
@@ -341,9 +313,7 @@ def update_games_for_user(user):
                     game_owned.is_new = is_new
                     records.append(game_owned)
             else:
-                records.append(
-                    models.Owned_Games(user=user, game=game_obj, is_new=is_new)
-                )
+                records.append(models.Owned_Games(user=user, game=game_obj, is_new=is_new))
 
     db.session.add_all(records)
     db.session.commit()
@@ -370,15 +340,11 @@ def change_game_preference(steam_id, game_id, operation):
     listing new games for a user.
     """
     user = models.User.query.filter_by(steam_id=steam_id).one_or_none()
-    owned_game_obj = models.Owned_Games.query.filter_by(
-        game_id=game_id, user=user
-    ).one_or_none()
+    owned_game_obj = models.Owned_Games.query.filter_by(game_id=game_id, user=user).one_or_none()
 
     if not owned_game_obj:
         current_app.logger.debug(
-            'Seems user "{}" does not own game "{}"'.format(
-                str(user.steam_id), str(game_id)
-            ),
+            'Seems user "{}" does not own game "{}"'.format(str(user.steam_id), str(game_id)),
             extra=get_log_data(),
         )
 
@@ -386,9 +352,7 @@ def change_game_preference(steam_id, game_id, operation):
         owned_game_obj.exclude = True
         owned_game_obj.include = False
         current_app.logger.debug(
-            'Excluding game "{}" for user "{}"'.format(
-                str(game_id), str(user.steam_id)
-            ),
+            'Excluding game "{}" for user "{}"'.format(str(game_id), str(user.steam_id)),
             extra=get_log_data(),
         )
     elif operation == "Add" and owned_game_obj.include is False:
@@ -396,9 +360,7 @@ def change_game_preference(steam_id, game_id, operation):
         owned_game_obj.include = True
         is_early_access(game_id)
         current_app.logger.debug(
-            'Including game "{}" for user "{}"'.format(
-                str(game_id), str(user.steam_id)
-            ),
+            'Including game "{}" for user "{}"'.format(str(game_id), str(user.steam_id)),
             extra=get_log_data(),
         )
     else:
