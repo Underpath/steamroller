@@ -66,14 +66,16 @@ class Steam:
 
         games_query = games_query.filter(
             models.Owned_Games.user == user,
-            models.Owned_Games.exclude is False,
-            or_(models.Owned_Games.include is True, models.Owned_Games.is_new is True),
+            models.Owned_Games.exclude == False,
+            or_(models.Owned_Games.include == True, models.Owned_Games.is_new == True),
         )
+
         games_query = games_query.all()
         new_games = result_to_dict(games_query)
 
         for game in new_games:
             game["appid"] = get_app_id(game["id"])
+
         return new_games
 
     def pick_new(self):
